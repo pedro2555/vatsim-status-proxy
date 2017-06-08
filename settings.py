@@ -9,7 +9,7 @@ ACARS API is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, version 2 of the License.
 
-ACARS API is distributed in the hope that it will be useful,
+VATSIM Status Proxy is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
@@ -20,7 +20,38 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
-DOMAIN = { }
+clients_schema = {
+	'callsign': {
+		'type': 'string'
+	},
+	'cid': {
+		'type': 'string'
+	},
+	'realname': {
+		'type': 'string'
+	},
+	'latitude': {
+		'type': 'point'
+	},
+	'longitude': {
+		'type': 'point'
+	},
+	'altitude': {
+		'type': 'number'
+	},
+	'groundspeed': {
+		'type': 'number'
+	}
+}
+clients = {
+	'schema': clients_schema,
+	'resource_methods': ['GET'],
+	'item_methods': ['GET']
+}
+
+DOMAIN = { 
+	'clients': clients
+}
 
 # We want to seamlessy run our API both locally and on Heroku. If running on
 # Heroku, sensible DB connection settings are stored in environment variables.
