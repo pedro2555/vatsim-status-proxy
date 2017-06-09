@@ -41,6 +41,9 @@ clients_schema = {
 	},
 	'groundspeed': {
 		'type': 'number'
+	},
+	'aircraft': {
+		'type': 'string'
 	}
 }
 clients = {
