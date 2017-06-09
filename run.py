@@ -24,6 +24,7 @@ from flask_bootstrap import Bootstrap
 from eve_docs import eve_docs
 import re
 import urllib2
+import datetime
 
 app = Eve()
 
@@ -39,14 +40,15 @@ else:
 
 @app.route("/status", methods=['GET'])
 def get_status():
-	#status = urllib2.urlopen('http://info.vroute.net/vatsim-data.txt')
-	status = open('sample.data')
+	status = urllib2.urlopen('http://info.vroute.net/vatsim-data.txt')
+	#status = open('sample.data')
 
 	SECTION_CLIENTS = False
 	SECTION_CLIENTS_MARKER = "!CLIENTS:"
 
 	clients_db = app.data.driver.db['clients']
-	clients_db.remove()
+
+	data_datetime = datetime.datetime.now()
 
 	for line in status.readlines():
 		line = line.strip()
@@ -54,7 +56,9 @@ def get_status():
 		if SECTION_CLIENTS:
 			if line == ';':
 				SECTION_CLIENTS = False
-				continue
+
+				# clear offline clients
+				clients_db.remove({ '_updated': { '$lt': data_datetime } })
 			else:
 				#
 				# CLIENT Capture session
@@ -67,13 +71,13 @@ def get_status():
 				longitude = clients_raw[6] 
 				altitude = clients_raw[7]
 				groundspeed = clients_raw[8] 
-				updated = clients_db.find_one('{ "callsign": ' + callsign + ', "cid": ' + cid + ' }')
+				updated = clients_db.find_one({ 'callsign': callsign, 'cid': cid })
 				if updated:
-					return 'True'
 					updated['latitude'] = latitude
 					updated['longitude'] = longitude
 					updated['altitude'] = altitude
 					updated['groundspeed'] = groundspeed
+					updated['_updated'] = data_datetime
 					clients_db.save(updated)
 				else:
 					insert = {
@@ -83,7 +87,9 @@ def get_status():
 						'latitude': latitude,
 						'longitude': longitude,
 						'altitude': altitude,
-						'groundspeed': groundspeed
+						'groundspeed': groundspeed,
+						'_created': data_datetime,
+						'_updated': data_datetime
 					}
 					clients_db.insert_one(insert)
 		else:
