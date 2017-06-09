@@ -41,6 +41,27 @@ clients_schema = {
 	},
 	'groundspeed': {
 		'type': 'number'
+	},
+	'flight_rules': {
+		'type': 'string'
+	},
+	'departure_ICAO': {
+		'type': 'string'
+	},
+	'destination_ICAO': {
+		'type': 'string'
+	},
+	'alternate_ICAO': {
+		'type': 'string'
+	},
+	'requested_flight_level': {
+		'type': 'number'
+	},
+	'route': {
+		'type': 'string'
+	},
+	'remarks': {
+		'type': 'string'
 	}
 }
 clients = {

@@ -67,16 +67,32 @@ def get_status():
 				callsign = clients_raw[0]
 				cid = clients_raw[1]
 				realname = clients_raw[2]
-				latitude = clients_raw[5] 
-				longitude = clients_raw[6] 
+				latitude = clients_raw[5]
+				longitude = clients_raw[6]
 				altitude = clients_raw[7]
-				groundspeed = clients_raw[8] 
+				groundspeed = clients_raw[8]
+				flight_rules = clients_raw[21]
+				departure_ICAO = clients_raw[11]
+				destination_ICAO = clients_raw[13]
+				alternate_ICAO = clients_raw[28]
+				requested_flight_level = clients_raw[12]
+				requested_speed = clients_raw[10]
+				route = clients_raw[30]
+				remarks = clients_raw[29]
 				updated = clients_db.find_one({ 'callsign': callsign, 'cid': cid })
 				if updated:
 					updated['latitude'] = latitude
 					updated['longitude'] = longitude
 					updated['altitude'] = altitude
 					updated['groundspeed'] = groundspeed
+					updated['flight_rules'] = flight_rules
+					updated['departure_ICAO'] = departure_ICAO
+					updated['destination_ICAO'] = destination_ICAO
+					updated['alternate_ICAO'] = alternate_ICAO
+					updated['requested_flight_level'] = requested_flight_level
+					updated['requested_speed'] = requested_speed
+					updated['route'] = route
+					updated['remarks'] = remarks
 					updated['_updated'] = data_datetime
 					clients_db.save(updated)
 				else:
@@ -88,6 +104,14 @@ def get_status():
 						'longitude': longitude,
 						'altitude': altitude,
 						'groundspeed': groundspeed,
+						'flight_rules': flight_rules,
+						'departure_ICAO': departure_ICAO,
+						'destination_ICAO': destination_ICAO,
+						'alternate_ICAO': alternate_ICAO,
+						'requested_flight_level': requested_flight_level,
+						'requested_speed': requested_speed,
+						'route': route,
+						'remarks': remarks,
 						'_created': data_datetime,
 						'_updated': data_datetime
 					}
