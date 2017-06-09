@@ -71,6 +71,7 @@ def get_status():
 				longitude = clients_raw[6]
 				altitude = clients_raw[7]
 				groundspeed = clients_raw[8]
+				heading = clients_raw[38]
 				flight_rules = clients_raw[21]
 				departure_ICAO = clients_raw[11]
 				destination_ICAO = clients_raw[13]
@@ -86,6 +87,7 @@ def get_status():
 					updated['longitude'] = longitude
 					updated['altitude'] = altitude
 					updated['groundspeed'] = groundspeed
+					updated['heading'] = heading
 					updated['flight_rules'] = flight_rules
 					updated['departure_ICAO'] = departure_ICAO
 					updated['destination_ICAO'] = destination_ICAO
@@ -106,6 +108,7 @@ def get_status():
 						'longitude': longitude,
 						'altitude': altitude,
 						'groundspeed': groundspeed,
+						'heading': heading,
 						'flight_rules': flight_rules,
 						'departure_ICAO': departure_ICAO,
 						'destination_ICAO': destination_ICAO,

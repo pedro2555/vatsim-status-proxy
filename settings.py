@@ -42,6 +42,9 @@ clients_schema = {
 	'groundspeed': {
 		'type': 'number'
 	},
+	'heading': {
+		'type': 'number'
+	},
 	'flight_rules': {
 		'type': 'string'
 	},
