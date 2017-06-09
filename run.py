@@ -38,6 +38,10 @@ else:
     host = '0.0.0.0'
     debug = True
 
+def pre_clients_get_callback(request, lookup):
+	print('A GET request on the contacts endpoint has just been received!')
+app.on_pre_clients_get_callback += pre_clients_get_callback
+
 @app.route("/status", methods=['GET'])
 def get_status():
 	status = urllib2.urlopen('http://info.vroute.net/vatsim-data.txt')
