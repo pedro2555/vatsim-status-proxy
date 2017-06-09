@@ -5,11 +5,11 @@ Copyright (C) 2017  Pedro Rodrigues <prodrigues1990@gmail.com>
 
 This file is part of VATSIM Status Proxy.
 
-ACARS API is free software: you can redistribute it and/or modify
+VATSIM Status Proxy is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, version 2 of the License.
 
-ACARS API is distributed in the hope that it will be useful,
+VATSIM Status Proxy is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
