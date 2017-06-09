@@ -79,6 +79,7 @@ def get_status():
 				requested_speed = clients_raw[10]
 				route = clients_raw[30]
 				remarks = clients_raw[29]
+				aircraft = clients_raw[9]
 				updated = clients_db.find_one({ 'callsign': callsign, 'cid': cid })
 				if updated:
 					updated['latitude'] = latitude
@@ -93,6 +94,7 @@ def get_status():
 					updated['requested_speed'] = requested_speed
 					updated['route'] = route
 					updated['remarks'] = remarks
+					updated['aircraft'] = aircraft
 					updated['_updated'] = data_datetime
 					clients_db.save(updated)
 				else:
@@ -112,6 +114,7 @@ def get_status():
 						'requested_speed': requested_speed,
 						'route': route,
 						'remarks': remarks,
+						'aircraft': aircraft,
 						'_created': data_datetime,
 						'_updated': data_datetime
 					}

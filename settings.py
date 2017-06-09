@@ -62,6 +62,9 @@ clients_schema = {
 	},
 	'remarks': {
 		'type': 'string'
+	},
+	'aircraft': {
+		'type': 'string'
 	}
 }
 clients = {
