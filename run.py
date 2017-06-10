@@ -25,6 +25,7 @@ from eve_docs import eve_docs
 import re
 import urllib2
 import datetime
+import pytz
 
 app = Eve()
 
@@ -38,12 +39,7 @@ else:
     host = '0.0.0.0'
     debug = True
 
-def pre_clients_get_callback(request, lookup):
-	print('A GET request on the contacts endpoint has just been received!')
-app.on_pre_clients_get_callback += pre_clients_get_callback
-
-@app.route("/status", methods=['GET'])
-def get_status():
+def get_VATSIM_clients():
 	status = urllib2.urlopen('http://info.vroute.net/vatsim-data.txt')
 	#status = open('sample.data')
 
@@ -52,7 +48,7 @@ def get_status():
 
 	clients_db = app.data.driver.db['clients']
 
-	data_datetime = datetime.datetime.now()
+	data_datetime = datetime.datetime.utcnow()
 
 	for line in status.readlines():
 		line = line.strip()
@@ -127,6 +123,18 @@ def get_status():
 			if line == SECTION_CLIENTS_MARKER:
 				SECTION_CLIENTS = True
 	return 'Ok'
+
+def pre_clients_get_callback(request, lookup):
+	# get the last update time
+	clients_db = app.data.driver.db['clients']
+	lastest_client = clients_db.find().sort('_updated', -1).limit(1)
+
+	if clients_db.count() == 0 or (datetime.datetime.utcnow() - lastest_client[0]['_updated'].replace(tzinfo=None)).total_seconds() > 30:
+		# get new data from VATSIM
+		get_VATSIM_clients()
+
+
+app.on_pre_GET_clients += pre_clients_get_callback
 
 if __name__ == '__main__':
 	Bootstrap(app)
