@@ -30,10 +30,7 @@ clients_schema = {
 	'realname': {
 		'type': 'string'
 	},
-	'latitude': {
-		'type': 'point'
-	},
-	'longitude': {
+	'location': {
 		'type': 'point'
 	},
 	'altitude': {
