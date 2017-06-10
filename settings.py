@@ -72,7 +72,8 @@ clients = {
 	'resource_methods': ['GET'],
 	'item_methods': ['GET'],
 	'mongo_indexes': {
-		'location_2d': [ ('location', '2d') ]
+		'location_2d': [ ('location', '2d') ],
+		'location_2dsphere': [ ('location', '2dsphere') ]
 	}
 }
 
