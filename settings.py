@@ -70,7 +70,10 @@ clients_schema = {
 clients = {
 	'schema': clients_schema,
 	'resource_methods': ['GET'],
-	'item_methods': ['GET']
+	'item_methods': ['GET'],
+	'mongo_indexes': {
+		'location_2d': [ ('location', '2d') ]
+	}
 }
 
 DOMAIN = { 

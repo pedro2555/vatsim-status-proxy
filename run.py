@@ -83,10 +83,7 @@ def get_VATSIM_clients():
 				aircraft = clients_raw[9]
 				updated = clients_db.find_one({ 'callsign': callsign, 'cid': cid })
 				if updated:
-					updated['location'] = {
-						'type': 'point',
-						'coordinates': [ latitude, longitude ]
-					}
+					updated['location'] = [ float(longitude), float(latitude) ]
 					updated['altitude'] = altitude
 					updated['groundspeed'] = groundspeed
 					updated['heading'] = heading
@@ -106,10 +103,7 @@ def get_VATSIM_clients():
 						'callsign': callsign,
 						'cid': cid,
 						'realname': realname,
-						'location': {
-							'type': 'point',
-							'coordinates': [ latitude, longitude ]
-						},
+						'location': [ float(longitude), float(latitude) ],
 						'altitude': altitude,
 						'groundspeed': groundspeed,
 						'heading': heading,
