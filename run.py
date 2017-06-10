@@ -60,66 +60,69 @@ def get_VATSIM_clients():
 				# clear offline clients
 				clients_db.remove({ '_updated': { '$lt': data_datetime } })
 			else:
-				#
-				# CLIENT Capture session
-				#
-				clients_raw = line.split(':')
-				callsign = clients_raw[0]
-				cid = clients_raw[1]
-				realname = clients_raw[2]
-				latitude = clients_raw[5]
-				longitude = clients_raw[6]
-				altitude = clients_raw[7]
-				groundspeed = clients_raw[8]
-				heading = clients_raw[38]
-				flight_rules = clients_raw[21]
-				departure_ICAO = clients_raw[11]
-				destination_ICAO = clients_raw[13]
-				alternate_ICAO = clients_raw[28]
-				requested_flight_level = clients_raw[12]
-				requested_speed = clients_raw[10]
-				route = clients_raw[30]
-				remarks = clients_raw[29]
-				aircraft = clients_raw[9]
-				updated = clients_db.find_one({ 'callsign': callsign, 'cid': cid })
-				if updated:
-					updated['location'] = [ float(longitude), float(latitude) ]
-					updated['altitude'] = altitude
-					updated['groundspeed'] = groundspeed
-					updated['heading'] = heading
-					updated['flight_rules'] = flight_rules
-					updated['departure_ICAO'] = departure_ICAO
-					updated['destination_ICAO'] = destination_ICAO
-					updated['alternate_ICAO'] = alternate_ICAO
-					updated['requested_flight_level'] = requested_flight_level
-					updated['requested_speed'] = requested_speed
-					updated['route'] = route
-					updated['remarks'] = remarks
-					updated['aircraft'] = aircraft
-					updated['_updated'] = data_datetime
-					clients_db.save(updated)
-				else:
-					insert = {
-						'callsign': callsign,
-						'cid': cid,
-						'realname': realname,
-						'location': [ float(longitude), float(latitude) ],
-						'altitude': altitude,
-						'groundspeed': groundspeed,
-						'heading': heading,
-						'flight_rules': flight_rules,
-						'departure_ICAO': departure_ICAO,
-						'destination_ICAO': destination_ICAO,
-						'alternate_ICAO': alternate_ICAO,
-						'requested_flight_level': requested_flight_level,
-						'requested_speed': requested_speed,
-						'route': route,
-						'remarks': remarks,
-						'aircraft': aircraft,
-						'_created': data_datetime,
-						'_updated': data_datetime
-					}
-					clients_db.insert_one(insert)
+				try:
+					#
+					# CLIENT Capture session
+					#
+					clients_raw = line.split(':')
+					callsign = clients_raw[0]
+					cid = clients_raw[1]
+					realname = clients_raw[2]
+					latitude = clients_raw[5]
+					longitude = clients_raw[6]
+					altitude = clients_raw[7]
+					groundspeed = clients_raw[8]
+					heading = clients_raw[38]
+					flight_rules = clients_raw[21]
+					departure_ICAO = clients_raw[11]
+					destination_ICAO = clients_raw[13]
+					alternate_ICAO = clients_raw[28]
+					requested_flight_level = clients_raw[12]
+					requested_speed = clients_raw[10]
+					route = clients_raw[30]
+					remarks = clients_raw[29]
+					aircraft = clients_raw[9]
+					updated = clients_db.find_one({ 'callsign': callsign, 'cid': cid })
+					if updated:
+						updated['location'] = [ float(longitude), float(latitude) ]
+						updated['altitude'] = altitude
+						updated['groundspeed'] = groundspeed
+						updated['heading'] = heading
+						updated['flight_rules'] = flight_rules
+						updated['departure_ICAO'] = departure_ICAO
+						updated['destination_ICAO'] = destination_ICAO
+						updated['alternate_ICAO'] = alternate_ICAO
+						updated['requested_flight_level'] = requested_flight_level
+						updated['requested_speed'] = requested_speed
+						updated['route'] = route
+						updated['remarks'] = remarks
+						updated['aircraft'] = aircraft
+						updated['_updated'] = data_datetime
+						clients_db.save(updated)
+					else:
+						insert = {
+							'callsign': callsign,
+							'cid': cid,
+							'realname': realname,
+							'location': [ float(longitude), float(latitude) ],
+							'altitude': altitude,
+							'groundspeed': groundspeed,
+							'heading': heading,
+							'flight_rules': flight_rules,
+							'departure_ICAO': departure_ICAO,
+							'destination_ICAO': destination_ICAO,
+							'alternate_ICAO': alternate_ICAO,
+							'requested_flight_level': requested_flight_level,
+							'requested_speed': requested_speed,
+							'route': route,
+							'remarks': remarks,
+							'aircraft': aircraft,
+							'_created': data_datetime,
+							'_updated': data_datetime
+						}
+						clients_db.insert_one(insert)
+				except Exception as e:
+					console.log(e)
 		else:
 			if line == SECTION_CLIENTS_MARKER:
 				SECTION_CLIENTS = True
