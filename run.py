@@ -67,6 +67,7 @@ def get_VATSIM_clients():
 					clients_raw = line.split(':')
 					callsign = clients_raw[0]
 					cid = clients_raw[1]
+					client_type = clients_raw[3]
 					realname = clients_raw[2]
 					latitude = clients_raw[5]
 					longitude = clients_raw[6]
@@ -82,7 +83,7 @@ def get_VATSIM_clients():
 					route = clients_raw[30]
 					remarks = clients_raw[29]
 					aircraft = clients_raw[9]
-					updated = clients_db.find_one({ 'callsign': callsign, 'cid': cid })
+					updated = clients_db.find_one({ 'callsign': callsign, 'cid': cid, 'client_type': client_type })
 					if updated:
 						updated['location'] = [ float(longitude), float(latitude) ]
 						updated['altitude'] = altitude
@@ -103,6 +104,7 @@ def get_VATSIM_clients():
 						insert = {
 							'callsign': callsign,
 							'cid': cid,
+							'client_type': client_type,
 							'realname': realname,
 							'location': [ float(longitude), float(latitude) ],
 							'altitude': altitude,
@@ -122,7 +124,7 @@ def get_VATSIM_clients():
 						}
 						clients_db.insert_one(insert)
 				except Exception as e:
-					console.log(e)
+					print e % ' lng:' % clients_raw[6] % ' lat:' % clients_raw[5]
 		else:
 			if line == SECTION_CLIENTS_MARKER:
 				SECTION_CLIENTS = True
