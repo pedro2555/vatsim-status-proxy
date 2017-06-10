@@ -1,0 +1,7 @@
+{
+  "name": "VATSIM Status Proxy",
+  "description": "",
+  "repository": "https://github.com/pedro2555/vatsim-status-proxy",
+  "keywords": ["python", "eve", "Flask" ],
+  "addons": [ "mongolab" ]
+}
