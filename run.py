@@ -39,7 +39,6 @@ else:
     host = '0.0.0.0'
     debug = True
 
-@app.route('/get_VATSIM_clients', methods=['GET'])
 def get_VATSIM_clients():
 	status = urllib2.urlopen('http://info.vroute.net/vatsim-data.txt')
 	#status = open('sample.data')
