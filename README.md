@@ -1,6 +1,6 @@
 # VATSIM Status Proxy
 
-A proxy server for VATSIM status servers.
+A RESTfull API for VATSIM status servers.
 
 ## Getting Started
 
@@ -10,8 +10,10 @@ The project is currently live at <a href="https://vatsim-status-proxy.herokuapp.
 
 Although not a requirement, access to a Linux shell is assumed.
 
- * Python2.7
- * Mongodb
+Your environment will require the following components installed and configured:
+
+ * <a href="https://www.python.org/">Python 2.7 <img src="https://www.python.org/static/img/python-logo.png" height="15px" /></a>
+ * <a href="https://www.mongodb.com/">MongoDB <img src="https://webassets.mongodb.com/_com_assets/global/mongodb-logo-white.png" height="15px" /></a>
 
 ### Installing
 
@@ -34,6 +36,8 @@ Install project requirements
 ```
 pip install -r requirements
 ```
+
+Make sure the database settings in [settings.py](settings.py) match your installation settings.
 
 You should now be able to run the server
 
