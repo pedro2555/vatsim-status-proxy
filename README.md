@@ -1,3 +1,69 @@
+# VATSIM Status Proxy
+
+A proxy server for VATSIM status servers.
+
+## Getting Started
+
+The project is currently live at <a href="https://vatsim-status-proxy.herokuapp.com"><img src="https://www-assets3.herokucdn.com/assets/logo-purple-08fb38cebb99e3aac5202df018eb337c5be74d5214768c90a8198c97420e4201.svg" height="15px" /></a>, however if you wish to have a copy in your own enviroment follow the steps in Prerequisites and Installing.
+
+### Prerequisites
+
+Although not a requirement, access to a Linux shell is assumed.
+
+ * Python2.7
+ * Mongodb
+
+### Installing
+
+Clone the project from GitHub and navigate to that folder
+
+```
+git clone https://github.com/pedro2555/vatsim-status-proxy.git
+cd vatsim-status-proxy
+```
+
+Initialize a Python virtual environment
+
+```
+virtualenv .
+source bin/activate
+```
+
+Install project requirements
+
+```
+pip install -r requirements
+```
+
+You should now be able to run the server
+
+```
+python run.py
+```
+
+## Built With
+
+* <a href="">Python-Eve <img src="http://python-eve.org/_static/eve_leaf.png" height="15px"/></a>
+
+## Contributing
+
+Send a pull request here, and explain the changes
+
+## Authors
+
+* **Pedro Rodrigues** - *Initial work*
+
+## License
+
+This project is licensed under the GNU GPL v2 License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* VATSIM for providing the data
+* Python-Eve for the elegant framework that powers this
+
+
+
 # vatsim-status-proxy
 
 ## Usage Examples
