@@ -39,6 +39,14 @@ pip install -r requirements
 
 Make sure the database settings in [settings.py](settings.py) match your installation settings.
 
+```
+MONGO_HOST = os.environ.get('MONGO_HOST', 'localhost')
+MONGO_PORT = os.environ.get('MONGO_PORT', 27017)
+MONGO_USERNAME = os.environ.get('MONGO_USERNAME', '')
+MONGO_PASSWORD = os.environ.get('MONGO_PASSWORD', '')
+MONGO_DBNAME = os.environ.get('MONGO_DBNAME', 'vatsim-status-proxy')
+```
+
 You should now be able to run the server
 
 ```
