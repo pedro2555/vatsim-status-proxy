@@ -55,7 +55,7 @@ python run.py
 
 ## Built With
 
-* <a href="">Python-Eve <img src="http://python-eve.org/_static/eve_leaf.png" height="15px"/></a>
+* <a href="http://python-eve.org/">Python-Eve <img src="http://python-eve.org/_static/eve_leaf.png" height="15px"/></a>
 
 ## Contributing
 
@@ -71,21 +71,5 @@ This project is licensed under the GNU GPL v2 License - see the [LICENSE.md](LIC
 
 ## Acknowledgments
 
-* VATSIM for providing the data
-* Python-Eve for the elegant framework that powers this
-
-
-
-# vatsim-status-proxy
-
-## Usage Examples
-
-_Notes_ All coordinates are specified as [long,lat] in decimal degrees
-
-Query a connected client by it's callsign
-
-	/clients?where={"callsign":""}
-
-Query connected clients by their current location, given a center coordinate and a radius (in meters)
-
-	/clients?where={"location":{"$near":{"$geometry":{"type":"Point","coordinates":[-7.9398969,37.0178]},"$maxDistance":250000}}}
+* <a href="https://www.vatsim.net/">VATSIM <img src="https://www.vatsim.net/sites/default/files/vatsim_0.png" height="15px"/></a> for providing the data
+* <a href="http://python-eve.org/">Python-Eve <img src="http://python-eve.org/_static/eve_leaf.png" height="15px"/></a> for the elegant framework that powers this
