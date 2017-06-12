@@ -8,7 +8,7 @@ The project is currently live at <a href="https://vatsim-status-proxy.herokuapp.
 
 ### Prerequisites
 
-Although not a requirement, access to a Linux shell is assumed.
+_Although not a requirement, access to a Bash unix shell is assumed. Actual development is done on [Bash on Ubuntu for Windows](https://msdn.microsoft.com/en-us/commandline/wsl/install_guide) on Windows 10 machine._
 
 Your environment will require the following components installed and configured:
 
