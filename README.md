@@ -1,4 +1,4 @@
-# vatsim-status-proxy
+# vatsim-status-proxy [![Build Status](https://travis-ci.org/pedro2555/vatsim-status-proxy.svg?branch=master)](https://travis-ci.org/pedro2555/vatsim-status-proxy)
 
 ## Usage Examples
 
