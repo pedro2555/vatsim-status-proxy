@@ -27,3 +27,37 @@ def parse_raw_location(latitude, longitude):
 	"""
 	# As per GEOJson Spec (RFC 7946) location coordinates are ordered longitude,latitude
 	return [ float(longitude), float(latitude) ]
+
+def parse_client_document(line):
+	"""Parses a line from VATSIM status data's CLIENTS section into a client document
+
+	Args:
+		line (string): A single line from VATSIM status data's CLIENTS section
+	"""
+	# split line into fragments
+	line = line.strip()
+	fragments = line.split(':')
+
+	# verify we have the correct number of fragments
+	if len(fragments) != 42: raise ValueError('Incorrect number of fragments in line.')
+
+	# assign fragments
+	document = {}
+	document['callsign'] = fragments[0]
+	document['cid'] = fragments[1]
+	document['realname'] = fragments[2]
+	document['client_type'] = fragments[3]
+	document['location'] = parse_raw_location(fragments[5], fragments[6])
+	document['altitude'] = int(fragments[7])
+	document['groundspeed'] = int(fragments[8])
+	document['heading'] = int(fragments[38])
+	document['flight_rules'] = fragments[21]
+	document['departure_ICAO'] = fragments[11]
+	document['destination_ICAO'] = fragments[13]
+	document['alternate_ICAO'] = fragments[28]
+	document['requested_flight_level'] = int(fragments[12])
+	document['route'] = fragments[30]
+	document['remarks'] = fragments[29]
+	document['aircraft'] = fragments[9]
+
+	return document
