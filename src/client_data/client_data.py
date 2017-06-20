@@ -42,20 +42,21 @@ def parse_client_document(line):
 	if len(fragments) != 42: raise ValueError('Incorrect number of fragments in line.')
 
 	# assign fragments
+	# make sure on int we correctly filter out empty values ont integers parsing
 	document = {}
 	document['callsign'] = fragments[0]
 	document['cid'] = fragments[1]
 	document['realname'] = fragments[2]
 	document['client_type'] = fragments[3]
 	document['location'] = parse_raw_location(fragments[5], fragments[6])
-	document['altitude'] = int(fragments[7])
-	document['groundspeed'] = int(fragments[8])
-	document['heading'] = int(fragments[38])
+	document['altitude'] = int(fragments[7]) if fragments[7] != '' else 0
+	document['groundspeed'] = int(fragments[8]) if fragments[8] != '' else 0
+	document['heading'] = int(fragments[38]) if fragments[38] != '' else 0
 	document['flight_rules'] = fragments[21]
 	document['departure_ICAO'] = fragments[11]
 	document['destination_ICAO'] = fragments[13]
 	document['alternate_ICAO'] = fragments[28]
-	document['requested_flight_level'] = int(fragments[12])
+	document['requested_flight_level'] = fragments[12]
 	document['route'] = fragments[30]
 	document['remarks'] = fragments[29]
 	document['aircraft'] = fragments[9]

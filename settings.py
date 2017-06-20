@@ -58,7 +58,7 @@ clients_schema = {
 		'type': 'string'
 	},
 	'requested_flight_level': {
-		'type': 'number'
+		'type': 'string'
 	},
 	'route': {
 		'type': 'string'
