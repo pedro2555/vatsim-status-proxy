@@ -44,7 +44,7 @@ def assign_from_spec(spec, line):
 
 	return result
 
-def fix_locations(obj):
+def convert_latlong_to_geojson(obj):
 	"""Changes any matching lat,long entries into a single GEOJson entry.
 	`obj` is expected to have none or more keys that matches `^(?P<start>.*)lon(?P<end>g|.*)$` and
 	an equivalent latitude defined by `$start + lat + $end[1:]`.
@@ -72,7 +72,9 @@ def fix_locations(obj):
 			continue
 
 		# we can already append the new location, and remove redundant entries in result object
-		new_object[match.groups()[0] + 'location'] = [float(value), float(obj[latitude_key])]
+		new_object[match.groups()[0] + 'location'] = {
+			'type': 'point',
+			'coordinates': [float(value), float(obj[latitude_key])]}
 		del new_object[key]
 		del new_object[latitude_key]
 
