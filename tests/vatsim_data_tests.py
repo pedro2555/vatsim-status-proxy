@@ -34,6 +34,8 @@ class VatsimDataTests(unittest.TestCase):
 				if spec_fragment != 'latitude' and spec_fragment != 'longitude':
 					self.assertIn(spec_fragment, result)
 
-			# check location was inserted
-			if 'latitude' in spec and 'longitude' in spec:
-				self.assertIn('location', result)
+	@file_data('test_convert_latlong_to_geojson.json')
+	def test_convert_latlong_to_geojson(self, test, location_key):
+		new_dict = vatsim_data.fix_locations(test)
+
+		self.assertIn(location_key, new_dict)

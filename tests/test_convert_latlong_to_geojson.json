@@ -1,0 +1,16 @@
+[
+	{
+		"test": {
+			"latitude": 5.0,
+			"longitude": 10.0
+		},
+		"location_key": "location"
+	},
+	{
+		"test": {
+			"planned_destairport_lat": 2.0,
+			"planned_destairport_lon": 3.0
+		},
+		"location_key": "planned_destairport_location"
+	}
+]

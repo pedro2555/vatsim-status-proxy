@@ -20,11 +20,11 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 import urllib2
 import datetime
 import pytz
+import re
 
 def assign_from_spec(spec, line):
 	"""Returns a dictionary by iterating colon separated values in both spec and line, like
-	dictionary[spec] = line. Also converts latitude and longitude values in location arrays (check
-	GEOJson point).
+	dictionary[spec] = line.
 
 	Args:
 		spec:	(string) colon separated list of spec headers
@@ -42,14 +42,41 @@ def assign_from_spec(spec, line):
 	for spec_fragment, line_fragment in zip(spec_fragments, line_fragments):
 		result[spec_fragment] = line_fragment
 
-	# change lat long element to GEOJson point named 'location'
-	if 'latitude' in result and 'longitude' in result:
-		result['location'] = [float(result['longitude']), float(result['latitude'])]
-		del result['latitude']
-		del result['longitude']
-
 	return result
 
+def fix_locations(obj):
+	"""Changes any matching lat,long entries into a single GEOJson entry.
+	`obj` is expected to have none or more keys that matches `^(?P<start>.*)lon(?P<end>g|.*)$` and
+	an equivalent latitude defined by `$start + lat + $end[1:]`.
+
+	Args:
+		obj:	(dict) the dictionary to mutate
+
+	Returns:	(dict) the mutated dictionary
+	"""
+	# search for longitude entries
+	new_object = obj
+	for key, value in obj.items():
+		match = re.match('^(?P<start>.*)lon(?P<end>g|.*)$', key)
+		if not match:
+			continue
+
+		# if we have a match, locate corresponding latitude
+		# 	latitude key should be similiar to longitude
+		#	even if matches are empty (ie.: 'longitude') the regex and concatenation bellow should
+		#	work ok.
+		# disconsider first letter from second match group (this maybe an issue, since it is a bind
+		# decision)
+		latitude_key = match.groups()[0] + 'lat' + match.groups()[1][1:]
+		if latitude_key not in obj:
+			continue
+
+		# we can already append the new location, and remove redundant entries in result object
+		new_object[match.groups()[0] + 'location'] = [float(value), float(obj[latitude_key])]
+		del new_object[key]
+		del new_object[latitude_key]
+
+	return new_object
 
 def last_data_server_timestamp(app):
 	clients = app.data.driver.db['clients']
