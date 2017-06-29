@@ -65,7 +65,7 @@ def convert_latlong_to_geojson(obj):
 		# 	latitude key should be similiar to longitude
 		#	even if matches are empty (ie.: 'longitude') the regex and concatenation bellow should
 		#	work ok.
-		# disconsider first letter from second match group (this maybe an issue, since it is a bind
+		# disconsider first letter from second match group (this maybe an issue, since it is a blind
 		# decision)
 		latitude_key = match.groups()[0] + 'lat' + match.groups()[1][1:]
 		if latitude_key not in obj:
@@ -73,7 +73,7 @@ def convert_latlong_to_geojson(obj):
 
 		# we can already append the new location, and remove redundant entries in result object
 		new_object[match.groups()[0] + 'location'] = {
-			'type': 'point',
+			'type': 'Point',
 			'coordinates': [float(value), float(obj[latitude_key])]}
 		del new_object[key]
 		del new_object[latitude_key]
