@@ -21,6 +21,74 @@ import urllib2
 import datetime
 import pytz
 
+def assign_from_spec(spec, line):
+	"""Returns a dictionary by iterating colon separated values in both spec and line, like
+	dictionary[spec] = line. Also converts latitude and longitude values in location arrays (check
+	GEOJson point).
+
+	Args:
+		spec:	(string) colon separated list of spec headers
+		line:	(string) colon separated list of values matching spec headers
+
+	Returns:	(dict) A dictionary of spec,line colon separated values
+	"""
+	spec_fragments = spec.split(':')
+	line_fragments = line.split(':')
+
+	if len(spec_fragments) != len(line_fragments):
+		raise ValueError('spec fragments do not match line fragments (%s %s)' % spec, line)
+	
+	result = {}
+	for spec_fragment, line_fragment in zip(spec_fragments, line_fragments):
+		result[spec_fragment] = line_fragment
+
+	# change lat long element to GEOJson point named 'location'
+	if 'latitude' in result and 'longitude' in result:
+		result['location'] = [float(result['longitude']), float(result['latitude'])]
+		del result['latitude']
+		del result['longitude']
+
+	return result
+
+
+def last_data_server_timestamp(app):
+	clients = app.data.driver.db['clients']
+
+	if clients.count() < 1:
+		return None
+
+	# get the most outdated client stamp
+	# (also remove any timezone information, we'll deal with UTC time only)
+	return clients.find().sort('_updated', -1).limit(1)[0]['_updated'].replace(tzinfo=None)
+
+def assign_client_data(line):
+	cross_reference = [
+		('callsign', 0),
+		('cid', 1),
+		('client_type', 3),
+		('realname', 2),
+		('latitude', 5),
+		('longitude', 6),
+		('altitude', 7),
+		('groundspeed', 8),
+		('heading', 38),
+		('flight_rules', 21),
+		('departure_ICAO', 11),
+		('destination_ICAO', 13),
+		('alternate_ICAO', 28),
+		('requested_flight_level', 12),
+		('requested_speed', 10),
+		('route', 30),
+		('remarks', 29),
+		('aircraft', 9)
+	]
+
+	client_data = {}
+
+	fragments = line.split(':')
+	for reference, index in cross_reference:
+		client_data[reference] = fragments[index]
+
 def get_VATSIM_clients(eve_app):
 	status = urllib2.urlopen('http://info.vroute.net/vatsim-data.txt')
 	#status = open('sample.data')
@@ -46,6 +114,8 @@ def get_VATSIM_clients(eve_app):
 					#
 					# CLIENT Capture session
 					#
+					client_data = assign_client_data(line)
+					print line
 					clients_raw = line.split(':')
 					callsign = clients_raw[0]
 					cid = clients_raw[1]

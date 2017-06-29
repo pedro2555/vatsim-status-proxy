@@ -18,14 +18,9 @@ else:
     debug = True
 
 def pre_clients_get_callback(request, lookup):
-	# get the last update time
-	clients_db = app.data.driver.db['clients']
-	lastest_client = clients_db.find().sort('_updated', -1).limit(1)
-
-	if clients_db.count() == 0 or (datetime.datetime.utcnow() - lastest_client[0]['_updated'].replace(tzinfo=None)).total_seconds() > 30:
-		# get new data from VATSIM
+	# check if newer info can be 
+	if (datetime.datetime.utcnow() - vatsim_data.last_data_server_timestamp(app)).total_seconds() > 30:
 		vatsim_data.get_VATSIM_clients(app)
-
 
 app.on_pre_GET_clients += pre_clients_get_callback
 
