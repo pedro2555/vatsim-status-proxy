@@ -19,7 +19,6 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
 from eve import Eve
 import os
-from flask_bootstrap import Bootstrap
 from src import vatsim_data
 import datetime
 
