@@ -12,5 +12,12 @@
 			"planned_destairport_lon": 3.0
 		},
 		"location_key": "planned_destairport_location"
+	},
+	{
+		"test": {
+			"latitude": "",
+			"longitude": ""
+		},
+		"location_key": "location"
 	}
 ]

@@ -17,10 +17,38 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
-import urllib2
+from urllib.request import urlopen
 import datetime
 import pytz
 import re
+import collections
+from copy import copy
+
+specs = {
+	'clients': {
+		'spec_token': '; !CLIENTS section -',
+		'open_token': '!CLIENTS:',
+		'close_token': ';',
+		'spec': None
+	}
+}
+
+def match_spec_token(line, spec_item):
+	"""
+
+	Args:
+		line:	(string) String to try to match
+
+	Returns:	(string) The name of the match document in `specs` or None
+
+	"""
+	if spec_item not in ('spec_token', 'open_token', 'close_token', 'spec'):
+		raise ValueError('Unable to find spec_item %s' % spec_item)
+
+	for name, spec in specs.items():
+		if line.startswith(spec[spec_item]):
+			return name
+	return None
 
 def assign_from_spec(spec, line):
 	"""Returns a dictionary by iterating colon separated values in both spec and line, like
@@ -40,23 +68,24 @@ def assign_from_spec(spec, line):
 	
 	result = {}
 	for spec_fragment, line_fragment in zip(spec_fragments, line_fragments):
-		result[spec_fragment] = line_fragment
+		if spec_fragment != '' and line_fragment != '':
+			result[spec_fragment] = line_fragment
 
 	return result
 
-def convert_latlong_to_geojson(obj):
+def convert_latlong_to_geojson(document):
 	"""Changes any matching lat,long entries into a single GEOJson entry.
-	`obj` is expected to have none or more keys that matches `^(?P<start>.*)lon(?P<end>g|.*)$` and
+	`document` is expected to have none or more keys that matches `^(?P<start>.*)lon(?P<end>g|.*)$` and
 	an equivalent latitude defined by `$start + lat + $end[1:]`.
 
 	Args:
-		obj:	(dict) the dictionary to mutate
+		document:	(dict) the document to mutate
 
-	Returns:	(dict) the mutated dictionary
+	Returns:	(dict) the mutated document
 	"""
 	# search for longitude entries
-	new_object = obj
-	for key, value in obj.items():
+	new_object = copy(document)
+	for key, value in document.items():
 		match = re.match('^(?P<start>.*)lon(?P<end>g|.*)$', key)
 		if not match:
 			continue
@@ -68,20 +97,105 @@ def convert_latlong_to_geojson(obj):
 		# disconsider first letter from second match group (this maybe an issue, since it is a blind
 		# decision)
 		latitude_key = match.groups()[0] + 'lat' + match.groups()[1][1:]
-		if latitude_key not in obj:
+		if latitude_key not in document:
 			continue
 
 		# we can already append the new location, and remove redundant entries in result object
-		new_object[match.groups()[0] + 'location'] = {
-			'type': 'Point',
-			'coordinates': [float(value), float(obj[latitude_key])]}
+		new_object[match.groups()[0] + 'location'] = [
+			0.0 if value == "" else float(value),
+			0.0 if document[latitude_key] == "" else float(document[latitude_key])
+		]
 		del new_object[key]
 		del new_object[latitude_key]
 
 	return new_object
 
-def last_data_server_timestamp(app):
-	clients = app.data.driver.db['clients']
+def save_document(document, document_type, timestamp, eve_app):
+	"""Creates or updates a given document and document type
+
+	"""
+	try:
+		# we all this info, otherwise is probably a test or admin, not sure (but theres some cases here and there)
+		if 'callsign' in document and 'cid' in document and 'realname' in document and 'clienttype' in document:
+			db = eve_app.data.driver.db[document_type]
+
+			existing = db.find_one({ 'callsign':	document['callsign'],
+									 'cid':			document['cid'],
+									 'clienttype': document['clienttype'] })
+
+			document['_updated'] = timestamp
+			if existing:
+				existing.update(document)
+				db.save(existing)
+			else:
+				document['_created'] = timestamp
+				db.insert_one(document)
+
+	except Exception as error:
+		raise ValueError('Unable to save document from line %s' % document) from error
+
+def is_data_old_enough(eve_app, document_type):
+	try:
+		db = eve_app.data.driver.db[document_type]
+
+		# no data, yes please
+		if db.count() < 1:
+			return True
+
+		# data more than 30 seconds old should be updated
+		utc_now = datetime.datetime.utcnow()
+		utc_last_update = db.find().sort('_updated', -1).limit(1)[0]['_updated'].replace(tzinfo=None)
+		if (utc_now - utc_last_update).total_seconds() > 30:
+			return True
+
+		# no positive match, so no
+		return False
+	except:
+		return False
+
+def pull_vatsim_data(eve_app):
+	vatsim_data_file = urlopen('http://info.vroute.net/vatsim-data.txt')
+	update_time = datetime.datetime.utcnow()
+	open_spec = None
+	for line in vatsim_data_file:
+		line = line.decode('utf-8', 'ignore')
+		line = line.strip()
+
+		if open_spec == None:
+			# listen for spec tokens, and append new spec
+			open_spec = match_spec_token(line, 'spec_token')
+			if open_spec != None:
+				# assign the actual spec line found
+				specs[open_spec]['spec'] = line.replace(specs[open_spec]['spec_token'], '').strip()
+				# we're not really on a spec so
+				open_spec = None
+				continue
+
+			# listen for open tokens
+			open_spec = match_spec_token(line, 'open_token')
+		else:
+			# listen for close tokens
+			close = match_spec_token(line, 'close_token')
+			if close != None:
+				# clear offline clients still on database
+				eve_app.data.driver.db[open_spec].remove({ '_updated': { '$lt': update_time } })
+				open_spec = None
+				continue
+
+			# or
+
+			# try match with spec
+			document = assign_from_spec(specs[open_spec]['spec'], line)
+			document = convert_latlong_to_geojson(document)
+
+			# push to db
+			try:
+				save_document(document, open_spec, update_time, eve_app)
+			except Exception as error:
+				print(error)
+
+def last_data_server_timestamp(eve_app):
+	clients = eve_app.data.driver.db['clients']
 
 	if clients.count() < 1:
 		return None
@@ -90,35 +204,17 @@ def last_data_server_timestamp(app):
 	# (also remove any timezone information, we'll deal with UTC time only)
 	return clients.find().sort('_updated', -1).limit(1)[0]['_updated'].replace(tzinfo=None)
 
-def assign_client_data(line):
-	cross_reference = [
-		('callsign', 0),
-		('cid', 1),
-		('client_type', 3),
-		('realname', 2),
-		('latitude', 5),
-		('longitude', 6),
-		('altitude', 7),
-		('groundspeed', 8),
-		('heading', 38),
-		('flight_rules', 21),
-		('departure_ICAO', 11),
-		('destination_ICAO', 13),
-		('alternate_ICAO', 28),
-		('requested_flight_level', 12),
-		('requested_speed', 10),
-		('route', 30),
-		('remarks', 29),
-		('aircraft', 9)
-	]
-
-	client_data = {}
-
-	fragments = line.split(':')
-	for reference, index in cross_reference:
-		client_data[reference] = fragments[index]
-
 def get_VATSIM_clients(eve_app):
+	{
+		'clients': {
+			'spec_token': '; !CLIENTS section -',
+			'open_token': '!CLIENTS:',
+			'close_token': ';'
+		}
+	}
+
+
+
 	status = urllib2.urlopen('http://info.vroute.net/vatsim-data.txt')
 	#status = open('sample.data')
 
@@ -143,8 +239,8 @@ def get_VATSIM_clients(eve_app):
 					#
 					# CLIENT Capture session
 					#
+					client_data = test_assign_from_spec(line)
 					client_data = assign_client_data(line)
-					print line
 					clients_raw = line.split(':')
 					callsign = clients_raw[0]
 					cid = clients_raw[1]
@@ -205,7 +301,7 @@ def get_VATSIM_clients(eve_app):
 						}
 						clients_db.insert_one(insert)
 				except Exception as e:
-					print e % ' lng:' % clients_raw[6] % ' lat:' % clients_raw[5]
+					print(e % ' lng:' % clients_raw[6] % ' lat:' % clients_raw[5])
 		else:
 			if line == SECTION_CLIENTS_MARKER:
 				SECTION_CLIENTS = True

@@ -1,3 +1,2 @@
 eve
-eve-docs
 pytz

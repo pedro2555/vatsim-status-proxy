@@ -2,7 +2,8 @@
 	{
 		"spec": "callsign:cid:realname:clienttype:frequency:latitude:longitude:altitude:groundspeed:planned_aircraft:planned_tascruise:planned_depairport:planned_altitude:planned_destairport:server:protrevision:rating:transponder:facilitytype:visualrange:planned_revision:planned_flighttype:planned_deptime:planned_actdeptime:planned_hrsenroute:planned_minenroute:planned_hrsfuel:planned_minfuel:planned_altairport:planned_remarks:planned_route:planned_depairport_lat:planned_depairport_lon:planned_destairport_lat:planned_destairport_lon:atis_message:time_last_atis_received:time_logon:heading:QNH_iHg:QNH_Mb:",
 		"lines": [
-			"26000:1329519:Joseph Asoofi KSFO:PILOT::33.13091:43.51828:38318:465:H/B703:495:OMDB:38000:EGSS:USA-E:100:1:1200:::1:I:0:0:6:24:7:40:EGGW: /r/:NADI2F NADIL M557 BALUS UL768 RAMSI UL602 RALKA G795 TASMI UL602 DRZ UM861 BUK UL602 MAKOL L602 KOMAN UL602 TIXIP UY553 DEGET DCT ABETI UL610 BATTY UL608 COA UL179 SASKI UL608 SUMUM UY6 IDESI CASE1C:0:0:0:0:::20170531163452:297:29.822:1009:"
+			"26000:1329519:Joseph Asoofi KSFO:PILOT::33.13091:43.51828:38318:465:H/B703:495:OMDB:38000:EGSS:USA-E:100:1:1200:::1:I:0:0:6:24:7:40:EGGW: /r/:NADI2F NADIL M557 BALUS UL768 RAMSI UL602 RALKA G795 TASMI UL602 DRZ UM861 BUK UL602 MAKOL L602 KOMAN UL602 TIXIP UY553 DEGET DCT ABETI UL610 BATTY UL608 COA UL179 SASKI UL608 SUMUM UY6 IDESI CASE1C:0:0:0:0:::20170531163452:297:29.822:1009:",
+			"NY_SW_CTR:1017951:Andrew Morkunas:ATC:133.470:41.17218:-75.44878:0:::0::::USA-E:100:11::6:300::::::::::::::::$ rw.liveatc.net/zny_a2^§New York Cente^§Serving all ZNY sectors including PHL TRACON (no oceanic)^§How am I doing? Feedback nyartcc.org/feedback:20170630224042:20170630224022::::"
 		]
 	}
 ]
