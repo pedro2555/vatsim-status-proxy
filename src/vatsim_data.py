@@ -101,10 +101,10 @@ def convert_latlong_to_geojson(document):
 			continue
 
 		# we can already append the new location, and remove redundant entries in result object
-		new_object[match.groups()[0] + 'location'] = (
+		new_object[match.groups()[0] + 'location'] = [
 			0.0 if value == "" else float(value),
 			0.0 if document[latitude_key] == "" else float(document[latitude_key])
-		)
+		]
 		del new_object[key]
 		del new_object[latitude_key]
 		#print(new_object[match.groups()[0] + 'location'])
@@ -116,7 +116,7 @@ def save_document(document, document_type, timestamp, eve_app):
 
 	"""
 	try:
-		# we all this info, otherwise is probably a test or admin, not sure (but theres some cases here and there)
+		# we need all this info, otherwise is probably a test or admin, not sure (but theres some cases here and there)
 		if 'callsign' in document and 'cid' in document and 'realname' in document and 'clienttype' in document:
 			db = eve_app.data.driver.db[document_type]
 

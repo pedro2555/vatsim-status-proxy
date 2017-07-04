@@ -22,11 +22,6 @@ import os
 from flask_bootstrap import Bootstrap
 from src import vatsim_data
 import datetime
-<<<<<<< HEAD
-=======
-import pytz
-import src.client_data.client_data as client_data
->>>>>>> refactor
 
 app = Eve()
 
