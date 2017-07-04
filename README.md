@@ -1,4 +1,4 @@
-# A RESTfull API for VATSIM status servers.
+# A RESTfull API for VATSIM status servers. [![Build Status](https://travis-ci.org/pedro2555/vatsim-status-proxy.svg?branch=master)](https://travis-ci.org/pedro2555/vatsim-status-proxy)
 
 ## Getting Started
 
