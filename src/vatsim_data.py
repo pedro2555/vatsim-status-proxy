@@ -101,12 +101,13 @@ def convert_latlong_to_geojson(document):
 			continue
 
 		# we can already append the new location, and remove redundant entries in result object
-		new_object[match.groups()[0] + 'location'] = [
+		new_object[match.groups()[0] + 'location'] = (
 			0.0 if value == "" else float(value),
 			0.0 if document[latitude_key] == "" else float(document[latitude_key])
-		]
+		)
 		del new_object[key]
 		del new_object[latitude_key]
+		#print(new_object[match.groups()[0] + 'location'])
 
 	return new_object
 
@@ -121,7 +122,7 @@ def save_document(document, document_type, timestamp, eve_app):
 
 			existing = db.find_one({ 'callsign':	document['callsign'],
 									 'cid':			document['cid'],
-									 'clienttype': document['clienttype'] })
+									 'clienttype':	document['clienttype'] })
 
 			document['_updated'] = timestamp
 			if existing:
@@ -150,7 +151,8 @@ def is_data_old_enough(eve_app, document_type):
 
 		# no positive match, so no
 		return False
-	except:
+	except Exception as error:
+		print(error)
 		return False
 
 def pull_vatsim_data(eve_app):
@@ -185,7 +187,11 @@ def pull_vatsim_data(eve_app):
 			# or
 
 			# try match with spec
-			document = assign_from_spec(specs[open_spec]['spec'], line)
+			try:
+				document = assign_from_spec(specs[open_spec]['spec'], line)
+			except Exception as error:
+				print('Failed to match spec on line %s' % line)
+				
 			document = convert_latlong_to_geojson(document)
 
 			# push to db
