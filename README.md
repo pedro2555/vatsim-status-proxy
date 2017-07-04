@@ -10,7 +10,7 @@ _Although not a requirement, access to a Bash unix shell is assumed. Actual deve
 
 Your environment will require the following components installed and configured:
 
- * <a href="https://www.python.org/">Python 2.7 <img src="https://www.python.org/static/img/python-logo.png" height="15px" /></a>
+ * <a href="https://www.python.org/">Python 3 <img src="https://www.python.org/static/img/python-logo.png" height="15px" /></a>
  * <a href="https://www.mongodb.com/">MongoDB <img src="https://webassets.mongodb.com/_com_assets/global/mongodb-logo-white.png" height="15px" /></a>
 
 ### Installing
