@@ -4,4 +4,7 @@ lib
 local
 *.pyc
 *.egg-info
-navdata
+man
+**/*.pyc
+*.egg-info
+sample.data
