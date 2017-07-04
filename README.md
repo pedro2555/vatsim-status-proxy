@@ -1,4 +1,4 @@
-#A RESTfull API for VATSIM status servers.
+# A RESTfull API for VATSIM status servers.
 
 ## Getting Started
 
