@@ -58,15 +58,15 @@ def parse_updated_datetime(line):
 	match = re.match(regex_sig, line)
 
 	if not match:
-		raise ValueError('Given line does not match header line regex (%s)', line)
+		return None
 
 	return datetime(int(match.groups()[2]), # Year
-							 int(match.groups()[1]), # Month
-							 int(match.groups()[0]), # Day
-							 int(match.groups()[3]), # Hour
-							 int(match.groups()[4]), # Minute
-							 int(match.groups()[5]), # Second
-							 0)					# Microsecond
+					int(match.groups()[1]), # Month
+					int(match.groups()[0]), # Day
+					int(match.groups()[3]), # Hour
+					int(match.groups()[4]), # Minute
+					int(match.groups()[5]), # Second
+					0)					# Microsecond
 
 def assign_from_spec(spec, line):
 	"""Returns a dictionary by iterating colon separated values in both spec and line, like
@@ -175,11 +175,14 @@ def is_data_old_enough(eve_app, document_type):
 
 def pull_vatsim_data(eve_app):
 	vatsim_data_file = urlopen('http://info.vroute.net/vatsim-data.txt')
-	update_time = datetime.utcnow()
+	update_time = None
 	open_spec = None
 	for line in vatsim_data_file:
 		line = line.decode('utf-8', 'ignore')
 		line = line.strip()
+
+		if update_time is None:
+			update_time = parse_updated_datetime(line)
 
 		if open_spec == None:
 			# listen for spec tokens, and append new spec
