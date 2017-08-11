@@ -19,6 +19,7 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
 import unittest
 from ddt import ddt, unpack, file_data, data
+from datetime import datetime
 from src import vatsim_data
 
 @ddt
@@ -49,3 +50,9 @@ class VatsimDataTests(unittest.TestCase):
 		new_dict = vatsim_data.convert_latlong_to_geojson(test)
 
 		self.assertIn(location_key, new_dict)
+
+	def test_parse_updated_datetime(self):
+		subject = '; Created at 31/05/2017 21:11:08 UTC by Data Server V4.0'
+		test = datetime(2017, 5, 31, 21, 11, 8, 0)
+
+		self.assertEqual(vatsim_data.parse_updated_datetime(subject), test)

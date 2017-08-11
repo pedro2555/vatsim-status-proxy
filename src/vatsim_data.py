@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
 from urllib.request import urlopen
-import datetime
+from datetime import datetime
 import pytz
 import re
 import collections
@@ -50,6 +50,24 @@ def match_spec_token(line, spec_item):
 			return name
 	return None
 
+def parse_updated_datetime(line):
+	"""Parses the first line from VATSIM whazupp file for the update Datetime.
+	"""
+	regex_sig = '^; Created at (\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2}) UTC by Data Server V\d.\d$'
+
+	match = re.match(regex_sig, line)
+
+	if not match:
+		raise ValueError('Given line does not match header line regex (%s)', line)
+
+	return datetime(int(match.groups()[2]), # Year
+							 int(match.groups()[1]), # Month
+							 int(match.groups()[0]), # Day
+							 int(match.groups()[3]), # Hour
+							 int(match.groups()[4]), # Minute
+							 int(match.groups()[5]), # Second
+							 0)					# Microsecond
+
 def assign_from_spec(spec, line):
 	"""Returns a dictionary by iterating colon separated values in both spec and line, like
 	dictionary[spec] = line.
@@ -65,7 +83,7 @@ def assign_from_spec(spec, line):
 
 	if len(spec_fragments) != len(line_fragments):
 		raise ValueError('spec fragments do not match line fragments (%s %s)' % spec, line)
-	
+
 	result = {}
 	for spec_fragment, line_fragment in zip(spec_fragments, line_fragments):
 		if spec_fragment != '' and line_fragment != '':
@@ -144,7 +162,7 @@ def is_data_old_enough(eve_app, document_type):
 			return True
 
 		# data more than 30 seconds old should be updated
-		utc_now = datetime.datetime.utcnow()
+		utc_now = datetime.utcnow()
 		utc_last_update = db.find().sort('_updated', -1).limit(1)[0]['_updated'].replace(tzinfo=None)
 		if (utc_now - utc_last_update).total_seconds() > 30:
 			return True
@@ -157,7 +175,7 @@ def is_data_old_enough(eve_app, document_type):
 
 def pull_vatsim_data(eve_app):
 	vatsim_data_file = urlopen('http://info.vroute.net/vatsim-data.txt')
-	update_time = datetime.datetime.utcnow()
+	update_time = datetime.utcnow()
 	open_spec = None
 	for line in vatsim_data_file:
 		line = line.decode('utf-8', 'ignore')
@@ -191,7 +209,7 @@ def pull_vatsim_data(eve_app):
 				document = assign_from_spec(specs[open_spec]['spec'], line)
 			except Exception as error:
 				print('Failed to match spec on line %s' % line)
-				
+
 			document = convert_latlong_to_geojson(document)
 
 			# push to db
