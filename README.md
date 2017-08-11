@@ -19,7 +19,7 @@ The project is currently live at <a href="https://vatsim-status-proxy.herokuapp.
 Although not very useful, querying the clients endpoint root, returns a list of all connected clients.
 It is still a more streamlined response, so you should be able to use a library of choice to read the data.
 
-```
+```http
 GET /clients
 
 200 OK
@@ -48,7 +48,7 @@ GET /clients
 
 You can also query by any single field.
 
-```
+```http
 GET /clients?where={"callsign":"N401EL"}
 
 200 OK
@@ -76,7 +76,7 @@ GET /clients?where={"callsign":"N401EL"}
 
 Perhaps more useful, since location field is GEOJson and indexed, you query for clients near a specfic location.
 
-```
+```http
 /clients?where={"location":{"$near":{"$geometry":{"type":"Point","coordinates":[long,lat]},"$maxDistance":range}}}
 
 200 OK
@@ -117,27 +117,27 @@ Your environment will require the following components installed and configured:
 
 Clone the project from GitHub and navigate to that folder
 
-```
+```bash
 git clone https://github.com/pedro2555/vatsim-status-proxy.git
 cd vatsim-status-proxy
 ```
 
 Initialize a Python virtual environment
 
-```
+```bash
 virtualenv .
 source bin/activate
 ```
 
 Install project requirements
 
-```
+```bash
 pip install -r requirements
 ```
 
 Make sure the database settings in [settings.py](settings.py) match your installation settings.
 
-```
+```python
 MONGO_HOST = os.environ.get('MONGO_HOST', 'localhost')
 MONGO_PORT = os.environ.get('MONGO_PORT', 27017)
 MONGO_USERNAME = os.environ.get('MONGO_USERNAME', '')
@@ -147,7 +147,7 @@ MONGO_DBNAME = os.environ.get('MONGO_DBNAME', 'vatsim-status-proxy')
 
 You should now be able to run the server
 
-```
+```bash
 python run.py
 ```
 
@@ -166,13 +166,13 @@ There are some stuff still on the TODO list (may put that on the issues page), y
 
 For development you will need some additional python packages, run the following `pip` command from the project diretory
 
-```
+```bash
 pip install -r dev-requirements.txt
 ```
 
 All code should have appropriate test cases and pass Travis-CI integration. To run the tests on your side run the following `setuputils` command from the project directory
 
-```
+```bash
 python setup.py test
 ```
 
