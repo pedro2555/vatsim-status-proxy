@@ -87,7 +87,7 @@ def assign_from_spec(spec, line):
 	result = {}
 	for spec_fragment, line_fragment in zip(spec_fragments, line_fragments):
 		if spec_fragment != '' and line_fragment != '':
-			if line_fragment.isDigit():
+			if line_fragment.isdigit():
 				result[spec_fragment] = float(line_fragment)
 			else:
 				result[spec_fragment] = line_fragment
