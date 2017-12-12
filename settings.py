@@ -35,6 +35,12 @@ clients_schema = {
 	},
 	'location': {
 		'type': 'point'
+	},
+	'groundspeed': {
+		'type': 'number'
+	},
+	'altitude': {
+		'type': 'number'
 	}
 }
 clients = {
