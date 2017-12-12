@@ -63,3 +63,4 @@ MONGO_DBNAME = os.environ.get('MONGO_DBNAME', 'vatsim-status-proxy')
 
 X_DOMAINS = '*'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+MONGO_QUERY_BLACKLIST = ['$where', '$regex']
