@@ -20,6 +20,37 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
+firs_schema = {
+	'icao': {
+		'type': 'string'
+	},
+	'name': {'type': 'string'},
+	'location': {'type': 'Point'},
+	'boundaries': {'type': 'Polygon'},
+	'callsigns': {
+		'type': 'list',
+        'schema': {'type': 'string'}
+	},
+	'sectors': {
+		'type': 'list',
+        'schema': {
+            'name': {'type': 'string'},
+			'location': {'type': 'Point'},
+            'boundaries': {'type': 'Polygon'},
+        	'callsigns': {
+        		'type': 'list',
+                'schema': {'type': 'string'}
+        	}
+        }
+	}
+}
+firs = {
+	'schema': firs_schema,
+	'resource_methods': ['GET'],
+	'item_methods': ['GET'],
+	'pagination': False
+}
+
 clients_schema = {
 	'callsign': {
 		'type': 'string'
@@ -55,7 +86,7 @@ clients = {
 	}
 }
 
-DOMAIN = { 
+DOMAIN = {
 	'clients': clients
 }
 
