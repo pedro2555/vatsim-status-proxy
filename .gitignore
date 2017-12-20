@@ -8,3 +8,5 @@ man
 **/*.pyc
 *.egg-info
 sample.data
+pip-selfcheck.json
+share

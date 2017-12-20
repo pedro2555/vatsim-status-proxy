@@ -28,9 +28,6 @@ class IcaoDataTests(unittest.TestCase):
         self.api_url = 'https://v4p4sz5ijk.execute-api.us-east-1.amazonaws.com/anbdata/airspaces/zones/fir-list'
         self.api_key = ''
 
-    def test_import_data(self):
-        icao_data.import_data(self.api_url, self.api_key)
-
     def test_request_icao_data(self):
         self.assertEqual(icao_data.request_icao_data(
                 self.api_url,

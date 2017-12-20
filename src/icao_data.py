@@ -18,10 +18,31 @@ You should have received a copy of the GNU General Public License
 along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
 from requests import get
+from datetime import datetime
 
-def import_data(url, api_key):
+def import_data(eve_app, url, api_key):
     icao_data = request_icao_data(url, api_key).json()
     proxy_data = parse_icao_data(icao_data)
+    populate_data(eve_app, proxy_data)
+
+def populate_data(eve_app, data, replace=False):
+    db = eve_app.data.driver.db['firs']
+    timestamp = datetime.now();
+
+    if replace:
+        db.remove()
+        db.insert(data)
+    else:
+        for document in data:
+            existing = db.find_one({'icao': document['icao']})
+            if existing:
+                del document['callsigns']
+                del document['name']
+                existing.update(document)
+                db.save(existing)
+            else:
+                document['_created'] = timestamp
+                db.insert_one(document)
 
 def parse_icao_data(icao_data):
     proxy_data = []
@@ -30,6 +51,9 @@ def parse_icao_data(icao_data):
         proxy_fir = {
             'icao': icao_fir['properties']['ICAOCODE'],
             'name': icao_fir['properties']['FIRname'],
+            'callsigns': [
+                icao_fir['properties']['ICAOCODE']
+            ],
             'location': {
                 'type': 'Point',
                 'coordinates': [

@@ -87,7 +87,8 @@ clients = {
 }
 
 DOMAIN = {
-	'clients': clients
+	'clients': clients,
+	'firs': firs
 }
 
 # We want to seamlessy run our API both locally and on Heroku. If running on
