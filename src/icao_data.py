@@ -38,10 +38,12 @@ def populate_data(eve_app, data, replace=False):
             if existing:
                 del document['callsigns']
                 del document['name']
+                existing['updated'] = timestamp
                 existing.update(document)
                 db.save(existing)
             else:
                 document['_created'] = timestamp
+                document['_updated'] = timestamp
                 db.insert_one(document)
 
 def parse_icao_data(icao_data):
