@@ -46,8 +46,8 @@ firs_schema = {
 }
 firs = {
 	'schema': firs_schema,
-	'resource_methods': ['GET'],
-	'item_methods': ['GET'],
+	'resource_methods': ['GET', 'POST'],
+	'item_methods': ['GET', 'PATCH', 'PUT'],
 	'pagination': False
 }
 
