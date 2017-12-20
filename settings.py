@@ -78,6 +78,7 @@ clients_schema = {
 		'required': False,
 		'data_relation': {
 			'resource': 'firs',
+			'field': '_id',
 			'embeddable': True
 		},
     },

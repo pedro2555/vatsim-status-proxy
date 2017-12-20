@@ -146,20 +146,21 @@ def save_document(document, document_type, timestamp, eve_app):
 									 'cid':			document['cid'],
 									 'clienttype':	document['clienttype'] })
 
+			 # try match FIR sector boundaries
+			callsign = document['callsign']
+			if '_' in callsign:
+				callsign = callsign[0:callsign.index('_')]
+				fir = firs_db.find_one({"callsigns": {
+					"$regex": callsign
+				}})
+				if fir:
+					document['boundaries'] = fir['_id']
+
 			document['_updated'] = timestamp
 			if existing:
 				existing.update(document)
 				db.save(existing)
 			else:
-				# try match FIR sector boundaries
-				if callsign.contains('_'):
-					callsign = callsign[0:callsign.index('_')]
-					fir = firs_db.find_one({"callsigns": {
-						"$regex": callsign
-					}})
-					fir = firs_db.find_one({"icao": callsign})
-					if fir:
-						document['boundaries'] = fir['_id']
 				document['_created'] = timestamp
 				db.insert_one(document)
 
