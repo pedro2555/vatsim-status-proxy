@@ -25,23 +25,11 @@ firs_schema = {
 		'type': 'string'
 	},
 	'name': {'type': 'string'},
-	'location': {'type': 'Point'},
-	'boundaries': {'type': 'Polygon'},
+	'location': {'type': 'point'},
+	'boundaries': {'type': 'polygon'},
 	'callsigns': {
 		'type': 'list',
         'schema': {'type': 'string'}
-	},
-	'sectors': {
-		'type': 'list',
-        'schema': {
-            'name': {'type': 'string'},
-			'location': {'type': 'Point'},
-            'boundaries': {'type': 'Polygon'},
-        	'callsigns': {
-        		'type': 'list',
-                'schema': {'type': 'string'}
-        	}
-        }
 	}
 }
 firs = {
