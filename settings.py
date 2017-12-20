@@ -72,7 +72,15 @@ clients_schema = {
 	},
 	'altitude': {
 		'type': 'number'
-	}
+	},
+	'boundaries': {
+		'type': 'objectid',
+		'required': False,
+		'data_relation': {
+			'resource': 'firs',
+			'embeddable': True
+		},
+    },
 }
 clients = {
 	'schema': clients_schema,

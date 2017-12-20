@@ -136,6 +136,7 @@ def save_document(document, document_type, timestamp, eve_app):
 	"""Creates or updates a given document and document type
 
 	"""
+	firs_db = eve_app.data.driver.db['firs']
 	try:
 		# we need all this info, otherwise is probably a test or admin, not sure (but theres some cases here and there)
 		if 'callsign' in document and 'cid' in document and 'realname' in document and 'clienttype' in document:
@@ -150,6 +151,15 @@ def save_document(document, document_type, timestamp, eve_app):
 				existing.update(document)
 				db.save(existing)
 			else:
+				# try match FIR sector boundaries
+				if callsign.contains('_'):
+					callsign = callsign[0:callsign.index('_')]
+					fir = firs_db.find_one({"callsigns": {
+						"$regex": callsign
+					}})
+					fir = firs_db.find_one({"icao": callsign})
+					if fir:
+						document['boundaries'] = fir['_id']
 				document['_created'] = timestamp
 				db.insert_one(document)
 
