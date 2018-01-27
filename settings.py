@@ -75,7 +75,7 @@ clients = {
 	'schema': clients_schema,
 	'allow_unknown': True,
 	'resource_methods': ['GET'],
-	'item_methods': ['GET'],
+	'item_methods': ['GET', 'PATCH'],
 	'pagination': False,
 	'mongo_indexes': {
 		'location_2d': [ ('location', '2d') ],
