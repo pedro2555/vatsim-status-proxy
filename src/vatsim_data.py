@@ -144,7 +144,8 @@ def save_document(document, document_type, timestamp, eve_app):
 
 			existing = db.find_one({ 'callsign':	document['callsign'],
 									 'cid':			document['cid'],
-									 'clienttype':	document['clienttype'] })
+									 'clienttype':	document['clienttype'],
+					       				 'timestamp': {'$lt': timestamp}})
 
 			 # try match FIR sector boundaries
 			callsign = document['callsign']
