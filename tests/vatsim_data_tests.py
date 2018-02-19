@@ -44,6 +44,12 @@ class VatsimDataTests(unittest.TestCase):
 
 			# check no invalid or empty values
 			self.assertNotIn('', result)
+			self.assertIsInstance(result['callsign'], str)
+			self.assertIsInstance(result['cid'], str)
+			self.assertIsInstance(result['realname'], str)
+			self.assertIsInstance(result['clienttype'], str)
+			self.assertIsInstance(result['groundspeed'], int)
+			self.assertIsInstance(result['altitude'], int)
 
 	@file_data('test_convert_latlong_to_geojson.json')
 	def test_convert_latlong_to_geojson(self, test, location_key):
