@@ -254,19 +254,11 @@ def pull_vatsim_data(eve_app):
             # or
 
             # try match with spec
-            try:
-                document = assign_from_spec(
-                    SPECS[open_spec]['spec'],
-                    line,
-                    SPECS[open_spec]['settings'])
-            except Exception as error:
-                print('Failed to match spec on line %s' % line)
-                print(error)
-
+            document = assign_from_spec(
+                SPECS[open_spec]['spec'],
+                line,
+                SPECS[open_spec]['settings'])
             document = convert_latlong_to_geojson(document)
 
             # push to db
-            try:
-                save_document(document, open_spec, update_time, eve_app)
-            except Exception as error:
-                print(error)
+            save_document(document, open_spec, update_time, eve_app)
