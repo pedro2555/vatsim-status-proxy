@@ -35,7 +35,17 @@ class VatsimDataTests(unittest.TestCase):
 	@file_data('test_assign_from_spec.json')
 	def test_assign_from_spec(self, spec, lines):
 		for line in lines:
-			result = vatsim_data.assign_from_spec(spec, line)
+			result = vatsim_data.assign_from_spec(
+				spec,
+				line,
+				{
+			        'callsign': str,
+			    	'cid': str,
+			    	'realname': str,
+			    	'clienttype': str,
+			    	'groundspeed': int,
+			    	'altitude': int
+			    })
 
 			# check id fragments, location is only parsed by convert_latlong_to_geojson
 			for spec_fragment in 'callsign:cid:realname:clienttype'.split(':'):
@@ -48,8 +58,10 @@ class VatsimDataTests(unittest.TestCase):
 			self.assertIsInstance(result['cid'], str)
 			self.assertIsInstance(result['realname'], str)
 			self.assertIsInstance(result['clienttype'], str)
-			self.assertIsInstance(result['groundspeed'], int)
-			self.assertIsInstance(result['altitude'], int)
+			if 'groundspeed' in result:
+				self.assertIsInstance(result['groundspeed'], int)
+			if 'altitude' in result:
+				self.assertIsInstance(result['altitude'], int)
 
 	@file_data('test_convert_latlong_to_geojson.json')
 	def test_convert_latlong_to_geojson(self, test, location_key):

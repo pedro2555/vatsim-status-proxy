@@ -27,7 +27,15 @@ SPECS = {
         'spec_token': '; !CLIENTS section -',
         'open_token': '!CLIENTS:',
         'close_token': ';',
-        'spec': None
+        'spec': None,
+        'settings': {
+            'callsign': str,
+            'cid': str,
+            'realname': str,
+            'clienttype': str,
+            'groundspeed': int,
+            'altitude': int
+        }
     }
 }
 
@@ -67,14 +75,16 @@ def parse_updated_datetime(line):
                     int(match.groups()[5]), # Second
                     0)                                      # Microsecond
 
-def assign_from_spec(spec, line):
+def assign_from_spec(spec, line, settings):
     """Returns a dictionary by iterating colon separated values in both spec and
     line, like dictionary[spec] = line.
 
     Args:
-            spec:   (string) colon separated list of spec headers
-            line:   (string) colon separated list of values matching spec
-                                headers
+            spec:       (string) colon separated list of spec headers
+            line:       (string) colon separated list of values matching spec
+            headers
+            settings    (Object) dict containing any special type handling for
+            fields
 
     Returns:        (dict) A dictionary of spec,line colon separated values
     """
@@ -82,12 +92,14 @@ def assign_from_spec(spec, line):
     line_fragments = line.split(':')
 
     if len(spec_fragments) != len(line_fragments):
-        raise ValueError('spec fragments do not match line fragments (%s %s)' % spec, line)
+        raise ValueError('spec fragments do not match line fragments (%s %s)' % line, spec)
 
     result = {}
     for spec_fragment, line_fragment in zip(spec_fragments, line_fragments):
         if spec_fragment != '' and line_fragment != '':
-            if line_fragment.isdigit():
+            if spec_fragment in settings:
+                result[spec_fragment] = settings[spec_fragment](line_fragment)
+            elif line_fragment.isdigit():
                 result[spec_fragment] = float(line_fragment)
             else:
                 result[spec_fragment] = line_fragment
@@ -243,7 +255,10 @@ def pull_vatsim_data(eve_app):
 
             # try match with spec
             try:
-                document = assign_from_spec(SPECS[open_spec]['spec'], line)
+                document = assign_from_spec(
+                    SPECS[open_spec]['spec'],
+                    line,
+                    SPECS[open_spec]['settings'])
             except Exception as error:
                 print('Failed to match spec on line %s' % line)
                 print(error)
