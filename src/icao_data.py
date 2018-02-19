@@ -17,36 +17,61 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
-from requests import get
 from datetime import datetime
+from requests import get
 
 def import_data(eve_app, url, api_key):
+    """ Downloads, parses, and populates backend mongodb with FIR boundary
+    data from ICAO API
+
+    Currently the API is free but that might change, check
+    https://www.icao.int/safety/iStars/Pages/API-Data-Service.aspx
+
+    Args:
+            eve_app (Object):   Eve instance
+            url     (string):   ICAO API url
+            api_key (string):   ICAO API key
+
+    """
     icao_data = request_icao_data(url, api_key).json()
     proxy_data = parse_icao_data(icao_data)
     populate_data(eve_app, proxy_data)
 
 def populate_data(eve_app, data, replace=False):
-    db = eve_app.data.driver.db['firs']
-    timestamp = datetime.now();
+    """ Populate the backend mongodb with parsed data
+
+    Args:
+            eve_app (Object):   Eve instance
+            data    (Object):   Parsed data (use parse_icao_data())
+            replace (Boolean):  If false, current data is erased
+    """
+    eve_db = eve_app.data.driver.db['firs']
+    timestamp = datetime.now()
 
     if replace:
-        db.remove()
-        db.insert(data)
+        eve_db.remove()
+        eve_db.insert(data)
     else:
         for document in data:
-            existing = db.find_one({'icao': document['icao']})
+            existing = eve_db.find_one({'icao': document['icao']})
             if existing:
                 del document['callsigns']
                 del document['name']
                 existing['updated'] = timestamp
                 existing.update(document)
-                db.save(existing)
+                eve_db.save(existing)
             else:
                 document['_created'] = timestamp
                 document['_updated'] = timestamp
-                db.insert_one(document)
+                eve_db.insert_one(document)
 
 def parse_icao_data(icao_data):
+    """ Parses raw ICAO API response into correct mongo schema as defined
+    in settings.py
+
+    Args:
+            icao_data   (string):   the raw response from ICAO API 200 Ok
+    """
     proxy_data = []
 
     for icao_fir in icao_data:
@@ -78,6 +103,12 @@ def parse_icao_data(icao_data):
     return proxy_data
 
 def request_icao_data(url, api_key):
+    """ Downloads data from ICAO API
+
+    Args:
+            url     (string):   ICAO API url
+            api_key (string):   ICAO API key
+    """
     parameters = {
         'api_key': api_key,
         'format': 'json',
