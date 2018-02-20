@@ -32,6 +32,18 @@ SPECS = {
             'callsign': str,
             'cid': str,
             'realname': str,
+            'clienttype': str
+        }
+    },
+    'prefiles': {
+        'spec_token': '; !PREFILE section -',
+        'open_token': '!PREFILE:',
+        'close_token': ';',
+        'spec': None,
+        'settings': {
+            'callsign': str,
+            'cid': str,
+            'realname': str,
             'clienttype': str,
             'groundspeed': int,
             'altitude': int
@@ -150,40 +162,34 @@ def save_document(document, document_type, timestamp, eve_app):
 
     """
     firs_db = eve_app.data.driver.db['firs']
-    try:
-        # we need all this info, otherwise is probably a test or admin, not
-        # sure (but theres some cases here and there)
-        if ('callsign' in document and
-                'cid' in document and
-                'realname' in document and
-                'clienttype' in document):
-            clients_db = eve_app.data.driver.db[document_type]
+    # we need all this info, otherwise is probably a test or admin, not
+    # sure (but theres some cases here and there)
+    if ('callsign' in document and
+            'cid' in document and
+            'realname' in document):
+        clients_db = eve_app.data.driver.db[document_type]
 
-            existing = clients_db.find_one({'callsign': document['callsign'],
-                                            'cid': document['cid'],
-                                            'clienttype': document['clienttype'],
-                                            'timestamp': {'$lt': timestamp}})
+        existing = clients_db.find_one({'callsign': document['callsign'],
+                                        'cid': document['cid'],
+                                        'timestamp': {'$lt': timestamp}})
 
-             # try match FIR sector boundaries
-            callsign = document['callsign']
-            if '_' in callsign:
-                callsign = callsign[0:callsign.index('_')]
-                fir = firs_db.find_one({"callsigns": {
-                    "$regex": callsign
-                }})
-                if fir:
-                    document['boundaries'] = fir['_id']
+         # try match FIR sector boundaries
+        callsign = document['callsign']
+        if '_' in callsign:
+            callsign = callsign[0:callsign.index('_')]
+            fir = firs_db.find_one({"callsigns": {
+                "$regex": callsign
+            }})
+            if fir:
+                document['boundaries'] = fir['_id']
 
-            document['_updated'] = timestamp
-            if existing:
-                existing.update(document)
-                clients_db.save(existing)
-            else:
-                document['_created'] = timestamp
-                clients_db.insert_one(document)
-
-    except Exception as error:
-        raise ValueError('Unable to save document from line %s' % document) from error
+        document['_updated'] = timestamp
+        if existing:
+            existing.update(document)
+            clients_db.save(existing)
+        else:
+            document['_created'] = timestamp
+            clients_db.insert_one(document)
 
 def is_data_old_enough(eve_app, document_type):
     """ Checks for aging data on the mongo backend to decide if downloading

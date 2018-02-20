@@ -74,7 +74,7 @@ clients_schema = {
 clients = {
 	'schema': clients_schema,
 	'allow_unknown': True,
-	'resource_methods': ['GET'],
+	'resource_methods': ['GET', 'POST'],
 	'item_methods': ['GET', 'PATCH'],
 	'pagination': False,
 	'mongo_indexes': {
@@ -82,9 +82,15 @@ clients = {
 		'location_2dsphere': [ ('location', '2dsphere') ]
 	}
 }
+prefiles = {
+	'schema': {},
+	'allow_unknown': True,
+	'resource_methods': ['GET']
+}
 
 DOMAIN = {
 	'clients': clients,
+	'prefiles': prefiles,
 	'firs': firs
 }
 
