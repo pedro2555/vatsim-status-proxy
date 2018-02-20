@@ -35,12 +35,28 @@ SPECS = {
             'clienttype': str
         }
     },
+    'prefiles': {
+        'spec_token': '; !PREFILE section -',
+        'open_token': '!PREFILE:',
+        'close_token': ';',
+        'spec': None,
+        'settings': {
+            'callsign': str,
+            'cid': str,
+            'realname': str,
+            'clienttype': str,
+            'groundspeed': int,
+            'altitude': int
+        }
+    },
     'servers': {
         'spec_token': '; !SERVERS section -',
         'open_token': '!SERVERS:',
         'close_token': ';',
         'spec': None,
-        'settings': {}
+        'settings': {
+            'location': str
+        }
     }
 }
 
@@ -156,76 +172,57 @@ def save_document(document, document_type, timestamp, eve_app):
     """
 	
     firs_db = eve_app.data.driver.db['firs']
-    try:
+    
         
         # we need all this info, otherwise is probably a test or admin, not
         # sure (but theres some cases here and there)
-        if ('callsign' in document and
-                'cid' in document and
-                'realname' in document and
-                'clienttype' in document):
-            clients_db = eve_app.data.driver.db[document_type]
+    if ('callsign' in document and
+            'cid' in document and
+            'realname' in document and
+            'clienttype' in document):
+        clients_db = eve_app.data.driver.db[document_type]
 
-            existing = clients_db.find_one({'callsign': document['callsign'],
-                                            'cid': document['cid'],
-                                            'clienttype': document['clienttype'],
-                                            'timestamp': {'$lt': timestamp}})
+        existing = clients_db.find_one({'callsign': document['callsign'],
+                                        'cid': document['cid'],
+                                        'clienttype': document['clienttype'],
+                                        'timestamp': {'$lt': timestamp}})
 
-             # try match FIR sector boundaries
-            callsign = document['callsign']
-            if '_' in callsign:
-                callsign = callsign[0:callsign.index('_')]
-                fir = firs_db.find_one({"callsigns": {
-                    "$regex": callsign
-                }})
-                if fir:
-                    document['boundaries'] = fir['_id']
+         # try match FIR sector boundaries
+        callsign = document['callsign']
+        if '_' in callsign:
+            callsign = callsign[0:callsign.index('_')]
+            fir = firs_db.find_one({"callsigns": {
+                "$regex": callsign
+            }})
+            if fir:
+                document['boundaries'] = fir['_id']
 
-            document['_updated'] = timestamp
-            if existing:
-                existing.update(document)
-                clients_db.save(existing)
-            else:
-                document['_created'] = timestamp
-                clients_db.insert_one(document)
+        document['_updated'] = timestamp
+        if existing:
+            existing.update(document)
+            clients_db.save(existing)
         else:
-            save_server_document(document,document_type,timestamp,eve_app)
-    except Exception as error:
-        raise ValueError('Unable to save document from line %s' % document) from error
-
-		
-def save_server_document(document, document_type, timestamp, eve_app):
-    """Creates or updates a given document and document type
-
-    """
-    firs_db = eve_app.data.driver.db['firs']
-    try:
-        # we need all this info, otherwise is probably a test or admin, not
-        # sure (but theres some cases here and there)
-            clients_db = eve_app.data.driver.db[document_type]
-
-            existing = clients_db.find_one({'hostname_or_IP': document['callsign']})
-
-             # try match FIR sector boundaries
-            callsign = document['ident']
-            if '_' in callsign:
-                callsign = callsign[0:callsign.index('_')]
-                fir = firs_db.find_one({"callsigns": {
-                    "$regex": callsign
+            document['_created'] = timestamp
+            clients_db.insert_one(document)
+    else:
+        clients_db = eve_app.data.driver.db[document_type]
+        existing = clients_db.find_one({'ident': document['ident']})
+        ident = document['ident']
+        if '_' in ident:
+            ident = ident[0:ident.index('_')]
+            fir = firs_db.find_one({"idents": {
+                    "$regex": ident
                 }})
-                if fir:
-                    document['boundaries'] = fir['_id']
-
+            if fir:
+                document['boundaries'] = fir['_id']
+                
             document['_updated'] = timestamp
-            if existing:
-                existing.update(document)
-                clients_db.save(existing)
-            else:
-                document['_created'] = timestamp
-                clients_db.insert_one(document)
-
-    except Exception as error:
-        raise ValueError('Unable to save document from line %s' % document) from error
+        if existing:
+            existing.update(document)
+            clients_db.save(existing)
+        else:
+            document['_created'] = timestamp
+            clients_db.insert_one(document)
 
 		
 def is_data_old_enough(eve_app, document_type):

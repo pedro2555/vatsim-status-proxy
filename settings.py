@@ -83,6 +83,11 @@ clients = {
 		'location_2dsphere': [ ('location', '2dsphere') ]
 	}
 }
+prefiles = {
+	'schema': {},
+	'allow_unknown': True,
+	'resource_methods': ['GET']
+}
 
 servers = {
 	'schema': clients_schema,
@@ -102,6 +107,7 @@ servers = {
 DOMAIN = {
 	'clients': clients,
 	'servers': servers,
+	'prefiles': prefiles,
 	'firs': firs
 }
 
