@@ -47,18 +47,19 @@ SPECS = {
             'clienttype': str,
             'groundspeed': int,
             'altitude': int
-        },
-        'servers': {
-            'spec_token': '; !SERVERS section -',
-            'open_token': '!SERVERS:',
-            'close_token': ';',
-            'spec': None,
-            'settings': {
-                'location': str
-            }
+        }
+    },
+    'servers': {
+        'spec_token': '; !SERVERS section -',
+        'open_token': '!SERVERS:',
+        'close_token': ';',
+        'spec': None,
+        'settings': {
+            'location': str
         }
     }
-}
+    }
+
 
 def match_spec_token(line, spec_item):
     """
@@ -109,7 +110,9 @@ def assign_from_spec(spec, line, settings):
 
     Returns:        (dict) A dictionary of spec,line colon separated values
     """
-    spec_fragments = spec.split(':')
+    global g_specs
+    g_specs = spec_fragments = spec.split(':')
+    #print(g_specs)
     line_fragments = line.split(':')
 
     if len(spec_fragments) != len(line_fragments):
@@ -127,6 +130,8 @@ def assign_from_spec(spec, line, settings):
 
     return result
 
+    
+    
 def convert_latlong_to_geojson(document):
     """Changes any matching lat,long entries into a single GEOJson entry.
     `document` is expected to have none or more keys that matches
@@ -162,22 +167,21 @@ def convert_latlong_to_geojson(document):
         ]
         del new_object[key]
         del new_object[latitude_key]
-        #print(new_object[match.groups()[0] + 'location'])
+        ##print(new_object[match.groups()[0] + 'location'])
 
     return new_object
-
+    
 def save_document(document, document_type, timestamp, eve_app):
     """Creates or updates a given document and document type
 
     """
     firs_db = eve_app.data.driver.db['firs']
+    
     # we need all this info, otherwise is probably a test or admin, not
     # sure (but theres some cases here and there)
-    if ('callsign' in document and
-            'cid' in document and
-            'realname' in document):
-        clients_db = eve_app.data.driver.db[document_type]
-
+    clients_db = eve_app.data.driver.db[document_type]
+    if (document_type == 'clients' or document_type == 'prefiles'):
+        
         existing = clients_db.find_one({'callsign': document['callsign'],
                                         'cid': document['cid'],
                                         'timestamp': {'$lt': timestamp}})
@@ -191,14 +195,18 @@ def save_document(document, document_type, timestamp, eve_app):
             }})
             if fir:
                 document['boundaries'] = fir['_id']
-
+    else:
+        print('check')
+        existing = clients_db.find_one({'hostname_or_IP': document['hostname_or_IP']})
+        host = document['hostname_or_IP']
         document['_updated'] = timestamp
-        if existing:
-            existing.update(document)
-            clients_db.save(existing)
-        else:
-            document['_created'] = timestamp
-            clients_db.insert_one(document)
+        
+    if existing:
+        existing.update(document)
+        clients_db.save(existing)
+    else:
+        document['_created'] = timestamp
+        clients_db.insert_one(document)
 
 def is_data_old_enough(eve_app, document_type):
     """ Checks for aging data on the mongo backend to decide if downloading
@@ -235,13 +243,15 @@ def pull_vatsim_data(eve_app):
     Args:
             eve_app (Object):   Eve instance
     """
+    print('boas')
     vatsim_data_file = urlopen('http://info.vroute.net/vatsim-data.txt')
     update_time = None
     open_spec = None
     for line in vatsim_data_file:
+        
         line = line.decode('utf-8', 'ignore')
         line = line.strip()
-
+        #print(line)
         if update_time is None:
             update_time = parse_updated_datetime(line)
 
@@ -269,10 +279,14 @@ def pull_vatsim_data(eve_app):
             # or
 
             # try match with spec
+            
+            
             document = assign_from_spec(
                 SPECS[open_spec]['spec'],
                 line,
                 SPECS[open_spec]['settings'])
+            
+            #(document)
             document = convert_latlong_to_geojson(document)
 
             # push to db
