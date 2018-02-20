@@ -32,10 +32,15 @@ SPECS = {
             'callsign': str,
             'cid': str,
             'realname': str,
-            'clienttype': str,
-            'groundspeed': int,
-            'altitude': int
+            'clienttype': str
         }
+    },
+    'servers': {
+        'spec_token': '; !SERVERS section -',
+        'open_token': '!SERVERS:',
+        'close_token': ';',
+        'spec': None,
+        'settings': {}
     }
 }
 
@@ -149,8 +154,10 @@ def save_document(document, document_type, timestamp, eve_app):
     """Creates or updates a given document and document type
 
     """
+	
     firs_db = eve_app.data.driver.db['firs']
     try:
+        
         # we need all this info, otherwise is probably a test or admin, not
         # sure (but theres some cases here and there)
         if ('callsign' in document and
@@ -181,10 +188,50 @@ def save_document(document, document_type, timestamp, eve_app):
             else:
                 document['_created'] = timestamp
                 clients_db.insert_one(document)
+        else:
+            save_server_document(document,document_type,timestamp,eve_app)
+    except Exception as error:
+        raise ValueError('Unable to save document from line %s' % document) from error
+
+		
+def save_server_document(document, document_type, timestamp, eve_app):
+    """Creates or updates a given document and document type
+
+    """
+    firs_db = eve_app.data.driver.db['firs']
+    try:
+        # we need all this info, otherwise is probably a test or admin, not
+        # sure (but theres some cases here and there)
+        
+            clients_db = eve_app.data.driver.db[document_type]
+
+            existing = clients_db.find_one({'callsign': document['callsign'],
+                                            'cid': document['cid'],
+                                            'clienttype': document['clienttype'],
+                                            'timestamp': {'$lt': timestamp}})
+
+             # try match FIR sector boundaries
+            callsign = document['callsign']
+            if '_' in callsign:
+                callsign = callsign[0:callsign.index('_')]
+                fir = firs_db.find_one({"callsigns": {
+                    "$regex": callsign
+                }})
+                if fir:
+                    document['boundaries'] = fir['_id']
+
+            document['_updated'] = timestamp
+            if existing:
+                existing.update(document)
+                clients_db.save(existing)
+            else:
+                document['_created'] = timestamp
+                clients_db.insert_one(document)
 
     except Exception as error:
         raise ValueError('Unable to save document from line %s' % document) from error
 
+		
 def is_data_old_enough(eve_app, document_type):
     """ Checks for aging data on the mongo backend to decide if downloading
     new data from VATSIM is required

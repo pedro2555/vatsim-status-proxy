@@ -71,6 +71,7 @@ clients_schema = {
 		},
     },
 }
+
 clients = {
 	'schema': clients_schema,
 	'allow_unknown': True,
@@ -83,8 +84,24 @@ clients = {
 	}
 }
 
+servers = {
+	'schema': clients_schema,
+	'allow_unknown': True,
+	'resource_methods': ['GET'],
+	'item_methods': ['GET', 'PATCH'],
+	'pagination': False,
+	'mongo_indexes': {
+		'location_2d': [ ('location', '2d') ],
+		'location_2dsphere': [ ('location', '2dsphere') ]
+	}
+}
+
+
+
+
 DOMAIN = {
 	'clients': clients,
+	'servers': servers,
 	'firs': firs
 }
 

@@ -43,7 +43,17 @@ def pre_clients_get_callback(request, lookup):
         vatsim_data.pull_vatsim_data(app)
     else:
         print('did not update')
+		
+def pre_servers_get_callback(request, lookup):
+    # check if newer info can be downloaded from vatsim status service
+    
+    vatsim_data.pull_vatsim_data(app)
+
+		
+		
+		
 app.on_pre_GET_clients += pre_clients_get_callback
+app.on_pre_GET_servers += pre_servers_get_callback
 
 @blueprint.route('/firs/update', methods=['GET'])
 def update_firs():
