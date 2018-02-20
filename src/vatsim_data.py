@@ -58,7 +58,7 @@ SPECS = {
             'location': str
         }
     }
-    }
+}
 
 
 def match_spec_token(line, spec_item):
@@ -175,15 +175,17 @@ def save_document(document, document_type, timestamp, eve_app):
     """Creates or updates a given document and document type
 
     """
+	
     firs_db = eve_app.data.driver.db['firs']
-    
     # we need all this info, otherwise is probably a test or admin, not
     # sure (but theres some cases here and there)
     clients_db = eve_app.data.driver.db[document_type]
-    if (document_type == 'clients' or document_type == 'prefiles'):
-        
+    if (document_type == 'clients' or document_type == 'prefiles'):       
+        # we need all this info, otherwise is probably a test or admin, not
+        # sure (but theres some cases here and there)
         existing = clients_db.find_one({'callsign': document['callsign'],
                                         'cid': document['cid'],
+                                        'clienttype': document['clienttype'],
                                         'timestamp': {'$lt': timestamp}})
 
          # try match FIR sector boundaries
@@ -196,11 +198,10 @@ def save_document(document, document_type, timestamp, eve_app):
             if fir:
                 document['boundaries'] = fir['_id']
     else:
-        print('check')
         existing = clients_db.find_one({'hostname_or_IP': document['hostname_or_IP']})
         host = document['hostname_or_IP']
         document['_updated'] = timestamp
-        
+
     if existing:
         existing.update(document)
         clients_db.save(existing)
@@ -208,6 +209,9 @@ def save_document(document, document_type, timestamp, eve_app):
         document['_created'] = timestamp
         clients_db.insert_one(document)
 
+
+
+		
 def is_data_old_enough(eve_app, document_type):
     """ Checks for aging data on the mongo backend to decide if downloading
     new data from VATSIM is required
