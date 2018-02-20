@@ -202,16 +202,12 @@ def save_server_document(document, document_type, timestamp, eve_app):
     try:
         # we need all this info, otherwise is probably a test or admin, not
         # sure (but theres some cases here and there)
-        
             clients_db = eve_app.data.driver.db[document_type]
 
-            existing = clients_db.find_one({'callsign': document['callsign'],
-                                            'cid': document['cid'],
-                                            'clienttype': document['clienttype'],
-                                            'timestamp': {'$lt': timestamp}})
+            existing = clients_db.find_one({'hostname_or_IP': document['callsign']})
 
              # try match FIR sector boundaries
-            callsign = document['callsign']
+            callsign = document['ident']
             if '_' in callsign:
                 callsign = callsign[0:callsign.index('_')]
                 fir = firs_db.find_one({"callsigns": {
