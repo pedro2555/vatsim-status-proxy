@@ -47,6 +47,15 @@ SPECS = {
             'clienttype': str,
             'groundspeed': int,
             'altitude': int
+        },
+        'servers': {
+            'spec_token': '; !SERVERS section -',
+            'open_token': '!SERVERS:',
+            'close_token': ';',
+            'spec': None,
+            'settings': {
+                'location': str
+            }
         }
     }
 }

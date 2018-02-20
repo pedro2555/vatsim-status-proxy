@@ -87,10 +87,18 @@ prefiles = {
 	'allow_unknown': True,
 	'resource_methods': ['GET']
 }
+servers = {
+	'schema': {},
+	'allow_unknown': True,
+	'resource_methods': ['GET'],
+	'item_methods': ['GET'],
+	'pagination': False
+}
 
 DOMAIN = {
 	'clients': clients,
 	'prefiles': prefiles,
+	'servers': servers,
 	'firs': firs
 }
 
