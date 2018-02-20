@@ -37,18 +37,27 @@ else:
     host = '0.0.0.0'
     debug = True
 
-def pre_GET_callback(request, lookup):
-    # check if newer info can be downloaded from vatsim status service
-    if vatsim_data.is_data_old_enough(app, 'clients'):
+def requestCallback(request, lookup):
+    """Check if newer info can be downloaded from vatsim status service
+
+    Since all endpoints origin on the same data source file querying any of
+    them for the latest created recorded would be more or less sufficient,
+    we're just looking for the most active endpoint
+    """
+    if app.debug or vatsim_data.is_data_old_enough(app, 'clients'):
         vatsim_data.pull_vatsim_data(app)
-    else:
-        print('did not update')
-app.on_pre_GET_clients += pre_GET_callback
-app.on_pre_GET_prefiles += pre_GET_callback
+
+# register callbacks
+app.on_pre_GET_clients += requestCallback
+app.on_pre_GET_prefiles += requestCallback
 
 @blueprint.route('/firs/update', methods=['GET'])
 def update_firs():
-    icao_data.import_data(app, 'https://v4p4sz5ijk.execute-api.us-east-1.amazonaws.com/anbdata/airspaces/zones/fir-list', '2a877ab0-4ed2-11e7-9b2e-d3182793b831')
+    icao_data.import_data(
+        app,
+        'https://v4p4sz5ijk.execute-api.us-east-1.amazonaws.com/'/
+        'anbdata/airspaces/zones/fir-list',
+        '2a877ab0-4ed2-11e7-9b2e-d3182793b831')
     return 'Done'
 
 app.register_blueprint(blueprint)
