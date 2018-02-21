@@ -28,6 +28,13 @@ SPECS = {
         'open_token': '!CLIENTS:',
         'close_token': ';',
         'spec': None,
+        'validate': lambda doc:
+                    ('callsign' in doc and
+                     'cid' in doc and
+                     'clienttype' in doc),
+        'find': lambda doc: {'callsign': doc['callsign'],
+                             'cid': doc['cid'],
+                             'clienttype': doc['clienttype']},
         'settings': {
             'callsign': str,
             'cid': str,
@@ -40,6 +47,11 @@ SPECS = {
         'open_token': '!PREFILE:',
         'close_token': ';',
         'spec': None,
+        'validate': lambda doc:
+                    ('callsign' in doc and
+                     'cid' in doc),
+        'find': lambda doc: {'callsign': doc['callsign'],
+                             'cid': doc['cid']},
         'settings': {
             'callsign': str,
             'cid': str,
@@ -54,11 +66,16 @@ SPECS = {
         'open_token': '!SERVERS:',
         'close_token': ';',
         'spec': None,
+        'validate': lambda doc:
+                    ('ident' in doc and
+                     'hostname_or_IP' in doc),
+        'find': lambda doc: {'ident': doc['ident'],
+                             'hostname_or_IP': doc['hostname_or_IP']},
         'settings': {
             'location': str
         }
     }
-    }
+}
 
 
 def match_spec_token(line, spec_item):
@@ -167,31 +184,17 @@ def convert_latlong_to_geojson(document):
 
     return new_object
 
-def save_document(document, document_type, timestamp, eve_app):
+def save_document(document, document_type, timestamp, settings, eve_app):
     """Creates or updates a given document and document type
 
     """
-    firs_db = eve_app.data.driver.db['firs']
     # we need all this info, otherwise is probably a test or admin, not
     # sure (but theres some cases here and there)
-    if ('callsign' in document and
-            'cid' in document and
-            'realname' in document):
+    if settings['validate'](document):
+
+        # lookup existing documents
         clients_db = eve_app.data.driver.db[document_type]
-
-        existing = clients_db.find_one({'callsign': document['callsign'],
-                                        'cid': document['cid'],
-                                        'timestamp': {'$lt': timestamp}})
-
-         # try match FIR sector boundaries
-        callsign = document['callsign']
-        if '_' in callsign:
-            callsign = callsign[0:callsign.index('_')]
-            fir = firs_db.find_one({"callsigns": {
-                "$regex": callsign
-            }})
-            if fir:
-                document['boundaries'] = fir['_id']
+        existing = clients_db.find_one(settings['validate'](document))
 
         document['_updated'] = timestamp
         if existing:
@@ -277,4 +280,4 @@ def pull_vatsim_data(eve_app):
             document = convert_latlong_to_geojson(document)
 
             # push to db
-            save_document(document, open_spec, update_time, eve_app)
+            save_document(document, open_spec, update_time, SPECS[open_spec], eve_app)
