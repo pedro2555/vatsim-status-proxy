@@ -50,6 +50,7 @@ def requestCallback(request, lookup):
 # register callbacks
 app.on_pre_GET_clients += requestCallback
 app.on_pre_GET_prefiles += requestCallback
+app.on_pre_GET_servers += requestCallback
 
 @blueprint.route('/firs/update', methods=['GET'])
 def update_firs():
