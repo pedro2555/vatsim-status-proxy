@@ -41,7 +41,8 @@ firs = {
 
 clients_schema = {
 	'callsign': {
-		'type': 'string'
+		'type': 'string',
+		'unique': True
 	},
 	'cid': {
 		'type': 'string'
