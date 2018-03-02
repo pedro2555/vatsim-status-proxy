@@ -194,7 +194,7 @@ def save_document(document, document_type, timestamp, settings, eve_app):
 
         # lookup existing documents
         clients_db = eve_app.data.driver.db[document_type]
-        existing = clients_db.find_one(settings['validate'](document))
+        existing = clients_db.find_one(settings['find'](document))
 
         document['_updated'] = timestamp
         if existing:
