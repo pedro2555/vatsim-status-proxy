@@ -291,7 +291,7 @@ def pull_vatsim_data(eve_app):
             document = convert_latlong_to_geojson(document)
 
             # push to db
-            save_document
+            save_document(
                 document,
                 open_spec,
                 update_time,
