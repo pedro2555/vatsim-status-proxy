@@ -112,7 +112,9 @@ def parse_updated_datetime(line):
                     int(match.groups()[3]), # Hour
                     int(match.groups()[4]), # Minute
                     int(match.groups()[5]), # Second
-                    0)                                      # Microsecond
+                    0)                      # Microsecond
+
+    return dt
 
 def assign_from_spec(spec, line, settings):
     """Returns a dictionary by iterating colon separated values in both spec and
@@ -204,7 +206,7 @@ def save_document(document, document_type, timestamp, settings, eve_app):
             document['_created'] = timestamp
             clients_db.insert_one(document)
 
-def is_data_old_enough(eve_app, document_type):
+def is_data_old_enough(eve_app):
     """ Checks for aging data on the mongo backend to decide if downloading
     new data from VATSIM is required
 
@@ -212,25 +214,24 @@ def is_data_old_enough(eve_app, document_type):
             eve_app         (Object):   Eve instance
             document_type   (string):   Mongodb collection name we're checking
     """
-    eve_db = eve_app.data.driver.db[document_type]
+    eve_db = eve_app.data.driver.db['dataversion']
+    data = eve_db.find_one()
+    if data:
+        return (datetime.utcnow() - eve_db['_updated']).total_seconds > 30
+    else:
+        return True # no data, yes please
 
-    # no data, yes please
-    if eve_db.count() < 1:
-        return True
-
-    # data more than 30 seconds old should be updated
-    utc_now = datetime.utcnow()
-    utc_last_update = (
-        eve_db.find()
-        .sort('_updated', -1)
-        .limit(1)[0]['_updated']
-        .replace(tzinfo=None)
-    )
-    if (utc_now - utc_last_update).total_seconds() > 30:
-        return True
-
-    # no positive match, so no
-    return False
+def set_update_time(eve_app, update_time):
+    eve_db = eve_app.data.driver.db['dataversion']
+    existing = eve_db.find_one()
+    data = {}
+    data['_updated'] = update_time
+    if existing:
+        existing.update(data)
+        eve_db.save(existing)
+    else:
+        data['_created'] = update_time
+        eve_db.insert_one(data)
 
 def pull_vatsim_data(eve_app):
     """Downloads, parses, and populates backend mongodb with the latest data
@@ -239,6 +240,7 @@ def pull_vatsim_data(eve_app):
     Args:
             eve_app (Object):   Eve instance
     """
+    set_update_time(eve_app, datetime.utcnow()) # avoid concurrent updates
     vatsim_data_file = urlopen('http://info.vroute.net/vatsim-data.txt')
     update_time = None
     open_spec = None
@@ -248,6 +250,9 @@ def pull_vatsim_data(eve_app):
 
         if update_time is None:
             update_time = parse_updated_datetime(line)
+            # actually use the real update time
+            if update_time:
+                set_update_time(eve_app, update_time)
 
         if open_spec is None:
             # listen for spec tokens, and append new spec
