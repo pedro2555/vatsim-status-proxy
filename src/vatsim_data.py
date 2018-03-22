@@ -133,7 +133,8 @@ def assign_from_spec(spec, line, settings):
     line_fragments = line.split(':')
 
     if len(spec_fragments) != len(line_fragments):
-        raise ValueError('spec fragments do not match line fragments (%s %s)' % line, spec)
+        raise ValueError(
+            'spec fragments do not match line fragments (%s %s)' % (line, spec))
 
     result = {}
     for spec_fragment, line_fragment in zip(spec_fragments, line_fragments):
@@ -171,17 +172,18 @@ def convert_latlong_to_geojson(document):
         #       concatenation bellow should work ok.
         # disconsider first letter from second match group (this maybe an
         # issue, since it is a blind decision)
-        latitude_key = match.groups()[0] + 'lat' + match.groups()[1][1:]
-        if latitude_key not in document:
+        lat_key = match.groups()[0] + 'lat' + match.groups()[1][1:]
+        if lat_key not in document:
             continue
 
-        # we can already append the new location, and remove redundant entries in result object
+        # we can already append the new location, and remove redundant entries
+        # in result object
         new_object[match.groups()[0] + 'location'] = [
             0.0 if value == "" else float(value),
-            0.0 if document[latitude_key] == "" else float(document[latitude_key])
+            0.0 if document[lat_key] == "" else float(document[lat_key])
         ]
         del new_object[key]
-        del new_object[latitude_key]
+        del new_object[lat_key]
         #print(new_object[match.groups()[0] + 'location'])
 
     return new_object
@@ -218,7 +220,7 @@ def is_data_old_enough(eve_app):
     data = eve_db.find_one()
     if data:
         data_time = data['_updated'].replace(tzinfo=None)
-        return (datetime.utcnow() - data_time).total_seconds() > 30
+        return (datetime.utcnow() - data_time).total_seconds() > 60
     else:
         return True # no data, yes please
 
@@ -260,7 +262,9 @@ def pull_vatsim_data(eve_app):
             open_spec = match_spec_token(line, 'spec_token')
             if open_spec != None:
                 # assign the actual spec line found
-                SPECS[open_spec]['spec'] = line.replace(SPECS[open_spec]['spec_token'], '').strip()
+                SPECS[open_spec]['spec'] = line.replace(
+                    SPECS[open_spec]['spec_token'],
+                    '').strip()
                 # we're not really on a spec so
                 open_spec = None
                 continue
@@ -272,7 +276,8 @@ def pull_vatsim_data(eve_app):
             close = match_spec_token(line, 'close_token')
             if close != None:
                 # clear offline clients still on database
-                eve_app.data.driver.db[open_spec].remove({'_updated': {'$lt': update_time}})
+                eve_app.data.driver.db[open_spec].remove(
+                    {'_updated': {'$lt': update_time}})
                 open_spec = None
                 continue
 
@@ -286,4 +291,9 @@ def pull_vatsim_data(eve_app):
             document = convert_latlong_to_geojson(document)
 
             # push to db
-            save_document(document, open_spec, update_time, SPECS[open_spec], eve_app)
+            save_document
+                document,
+                open_spec,
+                update_time,
+                SPECS[open_spec],
+                eve_app)
