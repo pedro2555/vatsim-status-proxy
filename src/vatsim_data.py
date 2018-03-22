@@ -217,7 +217,7 @@ def is_data_old_enough(eve_app):
     eve_db = eve_app.data.driver.db['dataversion']
     data = eve_db.find_one()
     if data:
-        return (datetime.utcnow() - eve_db['_updated']).total_seconds > 30
+        return (datetime.utcnow() - data['_updated']).total_seconds > 30
     else:
         return True # no data, yes please
 
