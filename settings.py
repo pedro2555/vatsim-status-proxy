@@ -95,12 +95,17 @@ servers = {
 	'item_methods': ['GET'],
 	'pagination': False
 }
+data_version = {
+	'schema': {},
+	'internal_resource': True
+}
 
 DOMAIN = {
 	'clients': clients,
 	'prefiles': prefiles,
 	'servers': servers,
-	'firs': firs
+	'firs': firs,
+	'dataversion': data_version
 }
 
 # We want to seamlessy run our API both locally and on Heroku. If running on
