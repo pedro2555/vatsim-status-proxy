@@ -112,7 +112,9 @@ def parse_updated_datetime(line):
                     int(match.groups()[3]), # Hour
                     int(match.groups()[4]), # Minute
                     int(match.groups()[5]), # Second
-                    0)                                      # Microsecond
+                    0)                      # Microsecond
+
+    return dt
 
 def assign_from_spec(spec, line, settings):
     """Returns a dictionary by iterating colon separated values in both spec and
@@ -131,7 +133,8 @@ def assign_from_spec(spec, line, settings):
     line_fragments = line.split(':')
 
     if len(spec_fragments) != len(line_fragments):
-        raise ValueError('spec fragments do not match line fragments (%s %s)' % line, spec)
+        raise ValueError(
+            'spec fragments do not match line fragments (%s %s)' % (line, spec))
 
     result = {}
     for spec_fragment, line_fragment in zip(spec_fragments, line_fragments):
@@ -169,17 +172,18 @@ def convert_latlong_to_geojson(document):
         #       concatenation bellow should work ok.
         # disconsider first letter from second match group (this maybe an
         # issue, since it is a blind decision)
-        latitude_key = match.groups()[0] + 'lat' + match.groups()[1][1:]
-        if latitude_key not in document:
+        lat_key = match.groups()[0] + 'lat' + match.groups()[1][1:]
+        if lat_key not in document:
             continue
 
-        # we can already append the new location, and remove redundant entries in result object
+        # we can already append the new location, and remove redundant entries
+        # in result object
         new_object[match.groups()[0] + 'location'] = [
             0.0 if value == "" else float(value),
-            0.0 if document[latitude_key] == "" else float(document[latitude_key])
+            0.0 if document[lat_key] == "" else float(document[lat_key])
         ]
         del new_object[key]
-        del new_object[latitude_key]
+        del new_object[lat_key]
         #print(new_object[match.groups()[0] + 'location'])
 
     return new_object
@@ -194,7 +198,7 @@ def save_document(document, document_type, timestamp, settings, eve_app):
 
         # lookup existing documents
         clients_db = eve_app.data.driver.db[document_type]
-        existing = clients_db.find_one(settings['validate'](document))
+        existing = clients_db.find_one(settings['find'](document))
 
         document['_updated'] = timestamp
         if existing:
@@ -204,7 +208,7 @@ def save_document(document, document_type, timestamp, settings, eve_app):
             document['_created'] = timestamp
             clients_db.insert_one(document)
 
-def is_data_old_enough(eve_app, document_type):
+def is_data_old_enough(eve_app):
     """ Checks for aging data on the mongo backend to decide if downloading
     new data from VATSIM is required
 
@@ -212,25 +216,25 @@ def is_data_old_enough(eve_app, document_type):
             eve_app         (Object):   Eve instance
             document_type   (string):   Mongodb collection name we're checking
     """
-    eve_db = eve_app.data.driver.db[document_type]
+    eve_db = eve_app.data.driver.db['dataversion']
+    data = eve_db.find_one()
+    if data:
+        data_time = data['_updated'].replace(tzinfo=None)
+        return (datetime.utcnow() - data_time).total_seconds() > 60
+    else:
+        return True # no data, yes please
 
-    # no data, yes please
-    if eve_db.count() < 1:
-        return True
-
-    # data more than 30 seconds old should be updated
-    utc_now = datetime.utcnow()
-    utc_last_update = (
-        eve_db.find()
-        .sort('_updated', -1)
-        .limit(1)[0]['_updated']
-        .replace(tzinfo=None)
-    )
-    if (utc_now - utc_last_update).total_seconds() > 30:
-        return True
-
-    # no positive match, so no
-    return False
+def set_update_time(eve_app, update_time):
+    eve_db = eve_app.data.driver.db['dataversion']
+    existing = eve_db.find_one()
+    data = {}
+    data['_updated'] = update_time
+    if existing:
+        existing.update(data)
+        eve_db.save(existing)
+    else:
+        data['_created'] = update_time
+        eve_db.insert_one(data)
 
 def pull_vatsim_data(eve_app):
     """Downloads, parses, and populates backend mongodb with the latest data
@@ -239,6 +243,7 @@ def pull_vatsim_data(eve_app):
     Args:
             eve_app (Object):   Eve instance
     """
+    set_update_time(eve_app, datetime.utcnow()) # avoid concurrent updates
     vatsim_data_file = urlopen('http://info.vroute.net/vatsim-data.txt')
     update_time = None
     open_spec = None
@@ -248,13 +253,18 @@ def pull_vatsim_data(eve_app):
 
         if update_time is None:
             update_time = parse_updated_datetime(line)
+            # actually use the real update time
+            if update_time:
+                set_update_time(eve_app, update_time)
 
         if open_spec is None:
             # listen for spec tokens, and append new spec
             open_spec = match_spec_token(line, 'spec_token')
             if open_spec != None:
                 # assign the actual spec line found
-                SPECS[open_spec]['spec'] = line.replace(SPECS[open_spec]['spec_token'], '').strip()
+                SPECS[open_spec]['spec'] = line.replace(
+                    SPECS[open_spec]['spec_token'],
+                    '').strip()
                 # we're not really on a spec so
                 open_spec = None
                 continue
@@ -266,7 +276,8 @@ def pull_vatsim_data(eve_app):
             close = match_spec_token(line, 'close_token')
             if close != None:
                 # clear offline clients still on database
-                eve_app.data.driver.db[open_spec].remove({'_updated': {'$lt': update_time}})
+                eve_app.data.driver.db[open_spec].remove(
+                    {'_updated': {'$lt': update_time}})
                 open_spec = None
                 continue
 
@@ -280,4 +291,9 @@ def pull_vatsim_data(eve_app):
             document = convert_latlong_to_geojson(document)
 
             # push to db
-            save_document(document, open_spec, update_time, SPECS[open_spec], eve_app)
+            save_document(
+                document,
+                open_spec,
+                update_time,
+                SPECS[open_spec],
+                eve_app)

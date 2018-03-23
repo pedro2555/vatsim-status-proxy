@@ -44,7 +44,7 @@ def requestCallback(request, lookup):
     them for the latest created recorded would be more or less sufficient,
     we're just looking for the most active endpoint
     """
-    if app.debug or vatsim_data.is_data_old_enough(app, 'clients'):
+    if app.debug or vatsim_data.is_data_old_enough(app):
         vatsim_data.pull_vatsim_data(app)
 
 # register callbacks
