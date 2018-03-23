@@ -79,7 +79,8 @@ clients = {
 	'pagination': False,
 	'mongo_indexes': {
 		'location_2d': [ ('location', '2d') ],
-		'location_2dsphere': [ ('location', '2dsphere') ]
+		'location_2dsphere': [ ('location', '2dsphere') ],
+                'callsign_text': [ ('callsign', 'text') ]
 	}
 }
 prefiles = {
