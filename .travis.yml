@@ -1,4 +1,5 @@
 dist: xenial
+services: mongodb
 sudo: false
 language: python
 cache: pip
