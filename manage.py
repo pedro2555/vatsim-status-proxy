@@ -20,6 +20,7 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import click
 import subprocess
+import sys
 
 @click.group()
 def cli():
@@ -36,12 +37,12 @@ def run(host, port, debug):
         app.run(host=host, port=port, debug=debug)
     else:
         bind = '%s:%s' % (host, port)
-        return subprocess.call(['gunicorn', 'src:app', '--bind', bind, '--log-file=-'])
+        subprocess.call(['gunicorn', 'src:app', '--bind', bind, '--log-file=-'])
 
 @cli.command()
 def shell():
     """Runs a shell in the app context."""
-    return subprocess.call(['flask', 'shell'])
+    subprocess.call(['flask', 'shell'])
 
 @cli.command()
 @click.option('--only', help='Run only the specified test.')
@@ -52,7 +53,7 @@ def test(only=None):
         suite.append(only)
     tests = subprocess.call(suite)
     subprocess.call(['coverage', 'report', '--show-missing'])
-    return tests
+    sys.exit(tests)
 
 if __name__ == '__main__':
     cli()
