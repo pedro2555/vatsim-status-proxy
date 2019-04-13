@@ -36,12 +36,12 @@ def run(host, port, debug):
         app.run(host=host, port=port, debug=debug)
     else:
         bind = '%s:%s' % (host, port)
-        subprocess.call(['gunicorn', 'src:app', '--bind', bind, '--log-file=-'])
+        return subprocess.call(['gunicorn', 'src:app', '--bind', bind, '--log-file=-'])
 
 @cli.command()
 def shell():
     """Runs a shell in the app context."""
-    subprocess.call(['flask', 'shell'])
+    return subprocess.call(['flask', 'shell'])
 
 @cli.command()
 @click.option('--only', help='Run only the specified test.')
@@ -50,8 +50,9 @@ def test(only=None):
     suite = ['coverage', 'run', '--source=src', '-m', 'unittest', '-v']
     if only:
         suite.append(only)
-    subprocess.call(suite)
+    tests = subprocess.call(suite)
     subprocess.call(['coverage', 'report', '--show-missing'])
+    return tests
 
 if __name__ == '__main__':
     cli()
