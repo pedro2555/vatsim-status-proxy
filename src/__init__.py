@@ -36,3 +36,7 @@ def update_firs():
         'https://v4p4sz5ijk.execute-api.us-east-1.amazonaws.com/anbdata/airspaces/zones/fir-list',
         '2a877ab0-4ed2-11e7-9b2e-d3182793b831')
     return 'Done'
+
+@app.route('/wake')
+def wake():
+    return '', 100
