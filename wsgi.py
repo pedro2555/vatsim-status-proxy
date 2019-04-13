@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 """
 VATSIM Status Proxy
-Copyright (C) 2017  Pedro Rodrigues <prodrigues1990@gmail.com>
+Copyright (C) 2017 - 2019  Pedro Rodrigues <prodrigues1990@gmail.com>
 
 This file is part of VATSIM Status Proxy.
 
@@ -17,19 +16,4 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
-import unittest
-from ddt import ddt, unpack, file_data, data
-from src import icao_data
-
-@ddt
-class IcaoDataTests(unittest.TestCase):
-
-    def setUp(self):
-        self.api_url = 'https://v4p4sz5ijk.execute-api.us-east-1.amazonaws.com/anbdata/airspaces/zones/fir-list'
-        self.api_key = ''
-
-    def test_request_icao_data(self):
-        self.assertEqual(icao_data.request_icao_data(
-                self.api_url,
-                self.api_key).status_code, # API key
-            200)
+from src import app

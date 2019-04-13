@@ -1,12 +1,9 @@
-bin
-include
-lib
-local
+# virtualenv
+venv/
+
+# python runtime
+__pycache__/
 *.pyc
-*.egg-info
-man
-**/*.pyc
-*.egg-info
-sample.data
-pip-selfcheck.json
-share
+
+# tests
+.coverage

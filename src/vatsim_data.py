@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+
 """
 VATSIM Status Proxy
-Copyright (C) 2017  Pedro Rodrigues <prodrigues1990@gmail.com>
+Copyright (C) 2017 - 2019  Pedro Rodrigues <prodrigues1990@gmail.com>
 
 This file is part of VATSIM Status Proxy.
 
@@ -21,6 +21,7 @@ from urllib.request import urlopen
 from datetime import datetime
 import re
 from copy import copy
+from flask import current_app as app
 
 SPECS = {
     'clients': {
@@ -77,8 +78,79 @@ SPECS = {
     }
 }
 
+def should_update():
+    """ Checks for aging data on the mongo backend to decide if downloading
+    new data from VATSIM is required
+    """
+    db = app.data.driver.db['dataversion']
+    data = db.find_one()
+    if data:
+        time = data['_updated'].replace(tzinfo=None)
+        return (datetime.utcnow() - time).total_seconds() > 60
+    else:
+        return True # no data, yes please
 
-def match_spec_token(line, spec_item):
+
+def update():
+    """Downloads, parses, and populates backend mongodb with the latest data
+    from VATSIM status servers.
+    """
+    _set_update_time(datetime.utcnow()) # avoid concurrent updates
+    vatsim_data_file = urlopen('http://info.vroute.net/vatsim-data.txt')
+    update_time = None
+    open_spec = None
+    for line in vatsim_data_file:
+        line = line.decode('utf-8', 'ignore')
+        line = line.strip()
+
+        if update_time is None:
+            update_time = _parse_updated_datetime(line)
+            # actually use the real update time
+            if update_time:
+                _set_update_time(update_time)
+
+        if open_spec is None:
+            # listen for spec tokens, and append new spec
+            open_spec = _match_spec_token(line, 'spec_token')
+            if open_spec != None:
+                # assign the actual spec line found
+                SPECS[open_spec]['spec'] = line.replace(
+                    SPECS[open_spec]['spec_token'],
+                    '').strip()
+                # we're not really on a spec so
+                open_spec = None
+                continue
+
+            # listen for open tokens
+            open_spec = _match_spec_token(line, 'open_token')
+        else:
+            # listen for close tokens
+            close = _match_spec_token(line, 'close_token')
+            if close != None:
+                # clear offline clients still on database
+                app.data.driver.db[open_spec].remove(
+                    {'_updated': {'$lt': update_time}})
+                open_spec = None
+                continue
+
+            # or
+
+            # try match with spec
+            document = _assign_from_spec(
+                SPECS[open_spec]['spec'],
+                line,
+                SPECS[open_spec]['settings'])
+            document = _convert_latlong_to_geojson(document)
+
+            # push to db
+            _save_document(
+                document,
+                open_spec,
+                update_time,
+                SPECS[open_spec])
+
+
+def _match_spec_token(line, spec_item):
     """
 
     Args:
@@ -95,7 +167,7 @@ def match_spec_token(line, spec_item):
             return name
     return None
 
-def parse_updated_datetime(line):
+def _parse_updated_datetime(line):
     """Parses the first line from VATSIM whazupp file for the update Datetime.
     """
     regex_sig = r'^; Created at (\d{2})\/(\d{2})\/(\d{4}) '\
@@ -116,7 +188,7 @@ def parse_updated_datetime(line):
 
     return dt
 
-def assign_from_spec(spec, line, settings):
+def _assign_from_spec(spec, line, settings):
     """Returns a dictionary by iterating colon separated values in both spec and
     line, like dictionary[spec] = line.
 
@@ -148,7 +220,7 @@ def assign_from_spec(spec, line, settings):
 
     return result
 
-def convert_latlong_to_geojson(document):
+def _convert_latlong_to_geojson(document):
     """Changes any matching lat,long entries into a single GEOJson entry.
     `document` is expected to have none or more keys that matches
     `^(?P<start>.*)lon(?P<end>g|.*)$` and an equivalent latitude defined by
@@ -188,7 +260,7 @@ def convert_latlong_to_geojson(document):
 
     return new_object
 
-def save_document(document, document_type, timestamp, settings, eve_app):
+def _save_document(document, document_type, timestamp, settings):
     """Creates or updates a given document and document type
 
     """
@@ -197,103 +269,25 @@ def save_document(document, document_type, timestamp, settings, eve_app):
     if settings['validate'](document):
 
         # lookup existing documents
-        clients_db = eve_app.data.driver.db[document_type]
-        existing = clients_db.find_one(settings['find'](document))
+        db = app.data.driver.db[document_type]
+        existing = db.find_one(settings['find'](document))
 
         document['_updated'] = timestamp
         if existing:
             existing.update(document)
-            clients_db.save(existing)
+            db.save(existing)
         else:
             document['_created'] = timestamp
-            clients_db.insert_one(document)
+            db.insert_one(document)
 
-def is_data_old_enough(eve_app):
-    """ Checks for aging data on the mongo backend to decide if downloading
-    new data from VATSIM is required
-
-    Args:
-            eve_app         (Object):   Eve instance
-            document_type   (string):   Mongodb collection name we're checking
-    """
-    eve_db = eve_app.data.driver.db['dataversion']
-    data = eve_db.find_one()
-    if data:
-        data_time = data['_updated'].replace(tzinfo=None)
-        return (datetime.utcnow() - data_time).total_seconds() > 60
-    else:
-        return True # no data, yes please
-
-def set_update_time(eve_app, update_time):
-    eve_db = eve_app.data.driver.db['dataversion']
-    existing = eve_db.find_one()
+def _set_update_time(update_time):
+    db = app.data.driver.db['dataversion']
+    existing = db.find_one()
     data = {}
     data['_updated'] = update_time
     if existing:
         existing.update(data)
-        eve_db.save(existing)
+        db.save(existing)
     else:
         data['_created'] = update_time
-        eve_db.insert_one(data)
-
-def pull_vatsim_data(eve_app):
-    """Downloads, parses, and populates backend mongodb with the latest data
-    from VATSIM status servers.
-
-    Args:
-            eve_app (Object):   Eve instance
-    """
-    set_update_time(eve_app, datetime.utcnow()) # avoid concurrent updates
-    vatsim_data_file = urlopen('http://info.vroute.net/vatsim-data.txt')
-    update_time = None
-    open_spec = None
-    for line in vatsim_data_file:
-        line = line.decode('utf-8', 'ignore')
-        line = line.strip()
-
-        if update_time is None:
-            update_time = parse_updated_datetime(line)
-            # actually use the real update time
-            if update_time:
-                set_update_time(eve_app, update_time)
-
-        if open_spec is None:
-            # listen for spec tokens, and append new spec
-            open_spec = match_spec_token(line, 'spec_token')
-            if open_spec != None:
-                # assign the actual spec line found
-                SPECS[open_spec]['spec'] = line.replace(
-                    SPECS[open_spec]['spec_token'],
-                    '').strip()
-                # we're not really on a spec so
-                open_spec = None
-                continue
-
-            # listen for open tokens
-            open_spec = match_spec_token(line, 'open_token')
-        else:
-            # listen for close tokens
-            close = match_spec_token(line, 'close_token')
-            if close != None:
-                # clear offline clients still on database
-                eve_app.data.driver.db[open_spec].remove(
-                    {'_updated': {'$lt': update_time}})
-                open_spec = None
-                continue
-
-            # or
-
-            # try match with spec
-            document = assign_from_spec(
-                SPECS[open_spec]['spec'],
-                line,
-                SPECS[open_spec]['settings'])
-            document = convert_latlong_to_geojson(document)
-
-            # push to db
-            save_document(
-                document,
-                open_spec,
-                update_time,
-                SPECS[open_spec],
-                eve_app)
+        db.insert_one(data)

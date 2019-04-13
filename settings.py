@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+
 """
 VATSIM Status Proxy
-Copyright (C) 2017  Pedro Rodrigues <prodrigues1990@gmail.com>
+Copyright (C) 2017 - 2019  Pedro Rodrigues <prodrigues1990@gmail.com>
 
 This file is part of VATSIM Status Proxy.
 
