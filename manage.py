@@ -35,7 +35,8 @@ def run(host, port, debug):
         from src import app
         app.run(host=host, port=port, debug=debug)
     else:
-        subprocess.call(['gunicorn', 'src:app', '--bind', f'{host}:{port}', '--log-file=-'])
+        bind = '%s:%s' % (host, port)
+        subprocess.call(['gunicorn', 'src:app', '--bind', bind, '--log-file=-'])
 
 @cli.command()
 def shell():
