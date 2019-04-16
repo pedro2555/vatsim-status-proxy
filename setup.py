@@ -16,7 +16,7 @@ from setuptools import setup, find_packages
 
 setup(
 	name='VATSIM Status Proxy',
-	version='0.1',
+	version='1.0',
 	description = 'VATSIM Status Proxy',
 	author = 'Pedro Rodrigues',
 	author_email = 'prodrigues1990@gmail.com',

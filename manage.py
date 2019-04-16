@@ -55,5 +55,11 @@ def test(only=None):
     subprocess.call(['coverage', 'report', '--show-missing'])
     sys.exit(tests)
 
+@cli.command()
+def lint():
+    """Runs pylinter."""
+    lint = subprocess.call(['pylint', 'src', 'tests'])
+    sys.exit(lint)
+
 if __name__ == '__main__':
     cli()

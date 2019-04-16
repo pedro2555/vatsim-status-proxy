@@ -4,9 +4,8 @@ sudo: false
 language: python
 cache: pip
 python:
-  - 3.4
-  - 3.5
-  - 3.6
   - 3.7
 before_script: "pip install -r requirements.txt"
-script: "python manage.py test"
+script:
+  - "python manage.py test"
+  - "python manage.py lint"
