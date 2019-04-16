@@ -71,8 +71,15 @@ class VatsimStatus():
 
 def _split_to_dict(keys, line, *, separator=':'):
     values = line.split(separator)
-    if len(keys) != len(values):
-        raise ValueError(f'Not enough values for keys in line: {values}')
+    if values[3] == 'ATC':
+        if (len(keys) - 3) != len(values):
+            raise ValueError(f'Not enough values for keys in line: {values}')
+    elif values[3] == '':
+        if (len(keys) - 5) != len(values):
+            raise ValueError(f'Not enough values for keys in line: {values}')
+    else:
+        if len(keys) != len(values):
+            raise ValueError(f'Not enough values for keys in line: {values}')
 
     return {key: value for key, value in zip(keys, values)}
 
