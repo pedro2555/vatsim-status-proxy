@@ -32,17 +32,11 @@ class VatsimTest(unittest.TestCase):
 		self.assertIsNotNone(status.version)
 		self.assertEqual(status.connected_clients, len(status.clients))
 		self.assertTrue(len(status.voice_servers) > 0)
-		for item in status.voice_servers:
-			self.assertIs(item, dict)
+		for item in [*status.voice_servers, *status.clients, *status.servers, *status.prefile]:
+			self.assertIs(type(item), dict)
 		self.assertTrue(len(status.clients) > 0)
-		for item in status.clients:
-			self.assertIs(item, dict)
 		self.assertTrue(len(status.servers) > 0)
-		for item in status.servers:
-			self.assertIs(item, dict)
 		self.assertTrue(len(status.prefile) > 0)
-		for item in status.prefile:
-			self.assertIs(item, dict)
 
 @ddt
 class VatsimDataTests(unittest.TestCase):
