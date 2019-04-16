@@ -19,6 +19,7 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
 from datetime import datetime
+from urllib.request import urlopen
 
 current_module = sys.modules[__name__]
 
@@ -68,6 +69,10 @@ class VatsimStatus():
         self.atis_allow_min = int(self.atis_allow_min)
         self.connected_clients = int(self.connected_clients)
 
+    @staticmethod
+    def from_url(url='http://info.vroute.net/vatsim-data.txt'):
+        file = urlopen(url)
+        return VatsimStatus([line.decode('utf-8', 'ignore') for line in file])
 
 def _split_to_dict(keys, line, *, separator=':'):
     values = line.split(separator)
