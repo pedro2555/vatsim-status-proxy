@@ -56,7 +56,7 @@ class VatsimStatus():
             else:
                 _section = f'_split_{section}'
                 try:
-                    line = line.strip(':')
+                    line = line[:-1]
                     line = vars(current_module)[_section](line)
                     getattr(self, section).append(line)
                 except AttributeError:
@@ -177,5 +177,6 @@ def _split_prefile(line):
     'time_last_atis_received',
     'time_logon',
     'heading',
-    'QNH_iHg:QNH_Mb')
+    'QNH_iHg',
+    'QNH_Mb')
     return _split_to_dict(keys, line)
