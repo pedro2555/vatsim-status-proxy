@@ -21,8 +21,9 @@ import sys
 from datetime import datetime
 from urllib.request import urlopen
 
-current_module = sys.modules[__name__]
+_current_module = sys.modules[__name__] # pylint: disable=C0103
 
+# pylint: disable=R0903, R0902
 class VatsimStatus():
     def __init__(self, lines):
         self.version = None
@@ -58,7 +59,7 @@ class VatsimStatus():
                 _section = f'_split_{section}'
                 try:
                     line = line[:-1]
-                    line = vars(current_module)[_section](line)
+                    line = vars(_current_module)[_section](line)
                     getattr(self, section).append(line)
                 except AttributeError:
                     pass
@@ -169,45 +170,46 @@ def _split_servers(line):
     return _split_to_dict(keys, line)
 
 def _split_prefile(line):
-    keys = ('callsign',
-    'cid',
-    'realname',
-    'clienttype',
-    'frequency',
-    'latitude',
-    'longitude',
-    'altitude',
-    'groundspeed',
-    'planned_aircraft',
-    'planned_tascruise',
-    'planned_depairport',
-    'planned_altitude',
-    'planned_destairport',
-    'server',
-    'protrevision',
-    'rating',
-    'transponder',
-    'facilitytype',
-    'visualrange',
-    'planned_revision',
-    'planned_flighttype',
-    'planned_deptime',
-    'planned_actdeptime',
-    'planned_hrsenroute',
-    'planned_minenroute',
-    'planned_hrsfuel',
-    'planned_minfuel',
-    'planned_altairport',
-    'planned_remarks',
-    'planned_route',
-    'planned_depairport_lat',
-    'planned_depairport_lon',
-    'planned_destairport_lat',
-    'planned_destairport_lon',
-    'atis_message',
-    'time_last_atis_received',
-    'time_logon',
-    'heading',
-    'QNH_iHg',
-    'QNH_Mb')
+    keys = (
+        'callsign',
+        'cid',
+        'realname',
+        'clienttype',
+        'frequency',
+        'latitude',
+        'longitude',
+        'altitude',
+        'groundspeed',
+        'planned_aircraft',
+        'planned_tascruise',
+        'planned_depairport',
+        'planned_altitude',
+        'planned_destairport',
+        'server',
+        'protrevision',
+        'rating',
+        'transponder',
+        'facilitytype',
+        'visualrange',
+        'planned_revision',
+        'planned_flighttype',
+        'planned_deptime',
+        'planned_actdeptime',
+        'planned_hrsenroute',
+        'planned_minenroute',
+        'planned_hrsfuel',
+        'planned_minfuel',
+        'planned_altairport',
+        'planned_remarks',
+        'planned_route',
+        'planned_depairport_lat',
+        'planned_depairport_lon',
+        'planned_destairport_lat',
+        'planned_destairport_lon',
+        'atis_message',
+        'time_last_atis_received',
+        'time_logon',
+        'heading',
+        'QNH_iHg',
+        'QNH_Mb')
     return _split_to_dict(keys, line)

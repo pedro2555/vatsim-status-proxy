@@ -20,14 +20,17 @@ import unittest
 
 from src import icao_data
 
+# pylint: disable=W0212
 class IcaoDataTests(unittest.TestCase):
 
     def setUp(self):
-        self.api_url = 'https://v4p4sz5ijk.execute-api.us-east-1.amazonaws.com/anbdata/airspaces/zones/fir-list'
+        self.api_url = 'https://v4p4sz5ijk.execute-api.us-east-1.amazonaws.com'\
+                       '/anbdata/airspaces/zones/fir-list'
         self.api_key = ''
 
     def test_request_icao_data(self):
-        self.assertEqual(icao_data._request_icao_data(
+        self.assertEqual(
+            icao_data._request_icao_data(
                 self.api_url,
                 self.api_key).status_code, # API key
             200)

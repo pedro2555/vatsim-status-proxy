@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
+# pylint: disable=C0103
 from datetime import datetime
 from requests import get
 from flask import current_app as app

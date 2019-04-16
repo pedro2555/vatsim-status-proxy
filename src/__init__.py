@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
+# pylint: disable=C0103
 from datetime import datetime, timedelta
 from eve import Eve
 from . import icao_data
@@ -23,7 +24,7 @@ from .vatsim import VatsimStatus
 
 app = Eve(__name__)
 
-def pre_get_callback(resource, request, lookup):
+def pre_get_callback(resource, *_):
     if resource not in ['voice_servers', 'clients', 'servers', 'prefiles']:
         return
 
@@ -73,7 +74,7 @@ def pre_get_callback(resource, request, lookup):
         existing = db.find_one({'callsign': item['callsign'], 'cid': item['cid']})
         save(existing, item)
 
-app.on_pre_GET += pre_get_callback
+app.on_pre_GET += pre_get_callback # pylint: disable=E1101
 
 @app.route('/firs/update', methods=['GET'])
 def update_firs():

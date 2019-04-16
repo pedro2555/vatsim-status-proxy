@@ -21,16 +21,16 @@ import unittest
 from src.vatsim import VatsimStatus
 
 class VatsimTest(unittest.TestCase):
-	def test(self):
-		with open('sample.data', 'r') as file:
-			file = file.readlines()
-		status = VatsimStatus(file)
+    def test(self):
+        with open('sample.data', 'r') as file:
+            file = file.readlines()
+        status = VatsimStatus(file)
 
-		self.assertIsNotNone(status.version)
-		self.assertEqual(status.connected_clients, len(status.clients))
-		self.assertTrue(len(status.voice_servers) > 0)
-		for item in [*status.voice_servers, *status.clients, *status.servers, *status.prefile]:
-			self.assertIs(type(item), dict)
-		self.assertTrue(len(status.clients) > 0)
-		self.assertTrue(len(status.servers) > 0)
-		self.assertTrue(len(status.prefile) > 0)
+        self.assertIsNotNone(status.version)
+        self.assertEqual(status.connected_clients, len(status.clients))
+        self.assertTrue(len(status.voice_servers) > 0)
+        for item in [*status.voice_servers, *status.clients, *status.servers, *status.prefile]:
+            self.assertIs(type(item), dict)
+        self.assertTrue(len(status.clients) > 0)
+        self.assertTrue(len(status.servers) > 0)
+        self.assertTrue(len(status.prefile) > 0)
