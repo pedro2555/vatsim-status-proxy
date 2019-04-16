@@ -21,6 +21,28 @@ import unittest
 from ddt import ddt, unpack, file_data, data
 from datetime import datetime
 from src import vatsim_data
+from src.vatsim import VatsimStatus
+
+class VatsimTest(unittest.TestCase):
+	def test(self):
+		with open('sample.data', 'r') as file:
+			file = file.readlines()
+		status = VatsimStatus(file)
+
+		self.assertIsNotNone(status.version)
+		self.assertEqual(status.connected_clients, len(status.clients))
+		self.assertTrue(len(status.voice_servers) > 0)
+		for item in status.voice_servers:
+			self.assertIs(item, dict)
+		self.assertTrue(len(status.clients) > 0)
+		for item in status.clients:
+			self.assertIs(item, dict)
+		self.assertTrue(len(status.servers) > 0)
+		for item in status.servers:
+			self.assertIs(item, dict)
+		self.assertTrue(len(status.prefile) > 0)
+		for item in status.prefile:
+			self.assertIs(item, dict)
 
 @ddt
 class VatsimDataTests(unittest.TestCase):
