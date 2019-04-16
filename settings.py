@@ -1,4 +1,3 @@
-
 """
 VATSIM Status Proxy
 Copyright (C) 2017 - 2019  Pedro Rodrigues <prodrigues1990@gmail.com>
@@ -17,10 +16,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 import os
+from copy import copy
 
-voice_servers = {
+default = {
 	'schema': {},
 	'allow_unknown': True,
 	'resource_methods': ['GET'],
@@ -32,24 +31,12 @@ clients_schema = {
 		'type': 'string',
 		'unique': True
 	},
-	'cid': {
-		'type': 'string'
-	},
-	'realname': {
-		'type': 'string'
-	},
-	'clienttype': {
-		'type': 'string'
-	},
-	'location': {
-		'type': 'point'
-	},
-	'groundspeed': {
-		'type': 'number'
-	},
-	'altitude': {
-		'type': 'number'
-	},
+	'cid': {'type': 'string'},
+	'realname': {'type': 'string'},
+	'clienttype': {'type': 'string'},
+	'location': {'type': 'point'},
+	'groundspeed': {'type': 'number'},
+	'altitude': {'type': 'number'},
 	'boundaries': {
 		'type': 'objectid',
 		'required': False,
@@ -71,18 +58,6 @@ clients = {
 		'location_2dsphere': [ ('location', '2dsphere') ],
                 'callsign_text': [ ('callsign', 'text') ]
 	}
-}
-servers = {
-	'schema': {},
-	'allow_unknown': True,
-	'resource_methods': ['GET'],
-	'item_methods': ['GET'],
-	'pagination': False
-}
-prefiles = {
-	'schema': {},
-	'allow_unknown': True,
-	'resource_methods': ['GET']
 }
 firs_schema = {
 	'icao': {
@@ -108,10 +83,10 @@ data_version = {
 }
 
 DOMAIN = {
-	'voice_servers': voice_servers,
+	'voice_servers': copy(default),
 	'clients': clients,
-	'servers': servers,
-	'prefiles': prefiles,
+	'servers': copy(default),
+	'prefiles': copy(default),
 	'firs': firs,
 	'dataversion': data_version
 }
