@@ -71,9 +71,7 @@ class VatsimStatus():
 
 def _split_to_dict(keys, line, *, separator=':'):
     values = line.split(separator)
-    if len(keys) != len(values):
-        raise ValueError(f'Not enough values for keys in line: {values}')
-
+    assert len(keys) == len(values), f'{len(keys)} != {len(values)} for {line}'
     return {key: value for key, value in zip(keys, values)}
 
 def _split_voice_servers(line):
