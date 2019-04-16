@@ -25,6 +25,7 @@ _current_module = sys.modules[__name__] # pylint: disable=C0103
 
 # pylint: disable=R0903, R0902
 class VatsimStatus():
+    """Dataclass holding the information provided by vatsim from status servers."""
     def __init__(self, lines):
         self.version = None
         self.reload = None
@@ -72,6 +73,13 @@ class VatsimStatus():
 
     @staticmethod
     def from_url(url='http://info.vroute.net/vatsim-data.txt'):
+        """Returns a valid VatsimStatus instance from the current status server information.
+
+        Args:
+            url (str): A valid status server url.
+
+        Returns:
+            VatsimStatus: object with status file information."""
         file = urlopen(url)
         return VatsimStatus([line.decode('utf-8', 'ignore') for line in file])
 

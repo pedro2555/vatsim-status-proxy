@@ -21,7 +21,9 @@ import unittest
 from src.vatsim import VatsimStatus
 
 class VatsimTest(unittest.TestCase):
+    """Tests for VatsimStatus dataclass."""
     def test(self):
+        """Test against a sample version of the status information."""
         with open('sample.data', 'r') as file:
             file = file.readlines()
         status = VatsimStatus(file)

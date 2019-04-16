@@ -25,6 +25,11 @@ from .vatsim import VatsimStatus
 app = Eve(__name__)
 
 def pre_get_callback(resource, *_):
+    """Updates vatsim status information if older than a predefined time (60 seconds).
+
+    Args:
+        resource (str): The endpoint name being accessed
+    """
     if resource not in ['voice_servers', 'clients', 'servers', 'prefiles']:
         return
 
@@ -78,6 +83,7 @@ app.on_pre_GET += pre_get_callback # pylint: disable=E1101
 
 @app.route('/firs/update', methods=['GET'])
 def update_firs():
+    """Update endpoint /fir information from ICAO API"""
     icao_data.import_data(
         'https://v4p4sz5ijk.execute-api.us-east-1.amazonaws.com/anbdata/airspaces/zones/fir-list',
         '2a877ab0-4ed2-11e7-9b2e-d3182793b831')
@@ -85,4 +91,5 @@ def update_firs():
 
 @app.route('/wake')
 def wake():
+    """Use to keep the API awake if we intend on making multiple 30+min spaced requests."""
     return '', 100
