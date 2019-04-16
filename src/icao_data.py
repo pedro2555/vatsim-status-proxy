@@ -1,4 +1,3 @@
-
 """
 VATSIM Status Proxy
 Copyright (C) 2017 - 2019  Pedro Rodrigues <prodrigues1990@gmail.com>

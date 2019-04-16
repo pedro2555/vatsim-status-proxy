@@ -17,10 +17,9 @@ You should have received a copy of the GNU General Public License
 along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
 import unittest
-from ddt import ddt, unpack, file_data, data
+
 from src import icao_data
 
-@ddt
 class IcaoDataTests(unittest.TestCase):
 
     def setUp(self):

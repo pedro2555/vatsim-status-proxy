@@ -18,7 +18,7 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
 from datetime import datetime, timedelta
 from eve import Eve
-from . import vatsim_data, icao_data
+from . import icao_data
 from .vatsim import VatsimStatus
 
 app = Eve(__name__)
