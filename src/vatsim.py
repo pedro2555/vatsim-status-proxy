@@ -131,7 +131,33 @@ def _split_clients(line):
         'heading',
         'QNH_iHg',
         'QNH_Mb')
-    return _split_to_dict(keys, line)
+    result = _split_to_dict(keys, line)
+    types = {
+        'latitude': float,
+        'longitude': float,
+        'planned_depairport_lat': float,
+        'planned_depairport_lon': float,
+        'planned_destairport_lat': float,
+        'planned_destairport_lon': float,
+        'altitude': int,
+        'groundspeed': int
+    }
+    for key, func in types.items():
+        value = result[key].strip()
+        value = value if value != '' else 0
+        result[key] = func(value)
+    result['location'] = [result['longitude'], result['latitude']]
+    del result['longitude'], result['latitude']
+    result['planned_depairport_location'] = [
+        result['planned_depairport_lon'],
+        result['planned_depairport_lat']]
+    del result['planned_depairport_lon'], result['planned_depairport_lat']
+    result['planned_destairport_location'] = [
+        result['planned_destairport_lon'],
+        result['planned_destairport_lat']]
+    del result['planned_destairport_lon'], result['planned_destairport_lat']
+
+    return result
 
 def _split_servers(line):
     keys = (
