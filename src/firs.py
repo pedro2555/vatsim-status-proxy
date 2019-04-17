@@ -20,7 +20,7 @@ import sys
 
 _current_module = sys.modules[__name__] # pylint: disable=C0103
 
-# pylint: disable=R0903, R0902
+# pylint: disable=R0903, R0902, R1702, R0912
 class Firs():
     """Dataclass holding the information provided by VATSpy.dat file from source."""
     def __init__(self, file):
