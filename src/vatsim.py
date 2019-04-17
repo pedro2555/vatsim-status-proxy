@@ -43,7 +43,7 @@ class VatsimStatus():
             if line.startswith(';') or line == '':
                 continue
 
-            if line.startswith('!'):
+            if line.startswith('!'): # is a section header
                 section = line[1:-1].lower().replace(' ', '_')
                 continue
 
