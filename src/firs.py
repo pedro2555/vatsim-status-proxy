@@ -77,7 +77,7 @@ class Firs():
         return Firs(file.replace('\n\n\n', '\n\n').split('\n\n'))
 
 def _split_to_dict(keys, line, *, separator='|'):
-    values = line.split(separator)[:6]
+    values = line.split(separator)[:len(keys)]
     assert len(keys) == len(values), f'{len(keys)} != {len(values)} for {line}'
     return {key: value for key, value in zip(keys, values)}
 
@@ -85,8 +85,7 @@ def _split_firs(line):
     keys = (
         'icao',
         'name',
-        'prefix_position',
-        'unknow')
+        'prefix_position')
     return _split_to_dict(keys, line)
 
 def _split_airports(line):
@@ -105,3 +104,4 @@ def _split_uirs(line):
         'name',
         'firs')
     return _split_to_dict(keys, line)
+    
