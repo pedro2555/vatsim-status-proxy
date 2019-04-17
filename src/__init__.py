@@ -82,7 +82,7 @@ def pre_get_callback(resource, *_):
         save(existing, item)
     db = app.data.driver.db['airports_poly']
     for item in firs_status.airports:
-        existing = db.find_one({'icao': item['name'], 'name': item['name']})
+        existing = db.find_one({'icao': item['icao'], 'name': item['name']})
         save(existing, item)
 
 app.on_pre_GET += pre_get_callback # pylint: disable=E1101

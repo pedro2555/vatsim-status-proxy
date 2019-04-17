@@ -32,16 +32,26 @@ class Firs():
             fir = fir.split('\n')
             section = fir[0]
             if section == '[FIRs]':
+                section = section.replace('[', '').replace(']', '').lower()
                 for item in fir:
                     if not item.startswith(';') and not item.startswith('['):
                         if item.split('|')[2] != '':
-                            #setattr(self.firs).append(_split_firs(item))
-                            pass
+                            try:
+                                line = item[:-1]
+                                line = vars(_current_module)['_split_firs'](line)
+                                getattr(self, section).append(line)
+                            except AttributeError:
+                                pass
             elif section == '[UIRs]':
+                section = section.replace('[', '').replace(']', '').lower()
                 for item in fir:
                     if not item.startswith(';') and not item.startswith('['):
-                        #setattr(self.uirs).append(_split_uirs(item))
-                        pass
+                        try:
+                            line = item[:-1]
+                            line = vars(_current_module)['_split_uirs'](line)
+                            getattr(self, section).append(line)
+                        except AttributeError:
+                            pass
             elif section == '[Airports]':
                 section = section.replace('[', '').replace(']', '').lower()
                 for item in fir:
@@ -95,4 +105,3 @@ def _split_uirs(line):
         'name',
         'firs')
     return _split_to_dict(keys, line)
-    
