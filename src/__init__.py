@@ -21,6 +21,7 @@ from datetime import datetime, timedelta
 from eve import Eve
 from . import icao_data
 from .vatsim import VatsimStatus
+from .firs import Firs
 
 app = Eve(__name__)
 
@@ -30,7 +31,7 @@ def pre_get_callback(resource, *_):
     Args:
         resource (str): The endpoint name being accessed
     """
-    if resource not in ['voice_servers', 'clients', 'servers', 'prefiles']:
+    if resource not in ['voice_servers', 'clients', 'servers', 'prefiles', 'airports_poly']:
         return
 
     db = app.data.driver.db['dataversion']
@@ -52,6 +53,7 @@ def pre_get_callback(resource, *_):
         db.insert_one({'_created': now, '_updated': now})
 
     status = VatsimStatus.from_url()
+    firs_status = Firs.from_url()
     def save(existing, new):
         new['_updated'] = now
         if existing:
@@ -77,6 +79,10 @@ def pre_get_callback(resource, *_):
     db = app.data.driver.db['prefile']
     for item in status.prefile:
         existing = db.find_one({'callsign': item['callsign'], 'cid': item['cid']})
+        save(existing, item)
+    db = app.data.driver.db['airports_poly']
+    for item in firs_status.airports:
+        existing = db.find_one({'icao': item['name'], 'name': item['name']})
         save(existing, item)
 
 app.on_pre_GET += pre_get_callback # pylint: disable=E1101

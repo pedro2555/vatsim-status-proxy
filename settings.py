@@ -77,6 +77,23 @@ firs = {
 	'item_methods': ['GET', 'PATCH', 'PUT'],
 	'pagination': False
 }
+airports_poly_schema = {
+	'icao': {
+		'type': 'string'
+	},
+	'name': {'type': 'string'},
+	'lat': {'type': 'string'},
+	'lng': {'type': 'string'},
+	'tma_prefix_position': {'type': 'string'},
+	'fir': {'type': 'string'}
+
+}
+airports_poly = {
+	'schema': airports_poly_schema,
+	'resource_methods': ['GET', 'POST'],
+	'item_methods': ['GET', 'PATCH', 'PUT'],
+	'pagination': False
+}
 data_version = {
 	'schema': {},
 	'internal_resource': True
@@ -88,7 +105,8 @@ DOMAIN = {
 	'servers': copy(default),
 	'prefiles': copy(default),
 	'firs': firs,
-	'dataversion': data_version
+	'dataversion': data_version,
+	'airports_poly': airports_poly
 }
 
 # We want to seamlessy run our API both locally and on Heroku. If running on
