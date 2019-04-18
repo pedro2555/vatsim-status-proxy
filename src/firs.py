@@ -64,15 +64,15 @@ class Firs():
                             pass
 
     @staticmethod
-    def from_url(url='VATSpy.dat'):
-        """Returns a valid VatsimStatus instance from the current status server information.
+    def from_url(datafile='VATSpy.dat'):
+        """Returns a valid FIR's, UIR's and airports informations.
 
         Args:
-            url (str): A valid status server url.
+            datafile (str): A valid VATSpy.dat file from VATSPY software.
 
         Returns:
-            VatsimStatus: object with status file information."""
-        with open(url, 'r', encoding="ISO-8859-1") as file:
+            Firs: object with status file information."""
+        with open(datafile, 'r', encoding="ISO-8859-1") as file:
             file = file.read()
         return Firs(file.replace('\n\n\n', '\n\n').split('\n\n'))
 
