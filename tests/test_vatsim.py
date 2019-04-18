@@ -40,7 +40,7 @@ class VatsimTest(unittest.TestCase):
 
     def test_firs(self):
         """Test against a sample version of the status information."""
-        with open('VATSpy.dat', 'r') as file:
+        with open('VATSpy.dat', 'r', errors='ignore') as file:
             file = file.readlines()
         status = Firs(file)
 
