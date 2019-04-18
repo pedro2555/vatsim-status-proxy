@@ -33,7 +33,7 @@ class FirsTest(unittest.TestCase):
         self.assertTrue(len(status.airports) > 0)
         self.assertTrue(len(status.firs) > 0)
         self.assertTrue(len(status.uirs) > 0)
-    
+
     def test_firs_polygons(self):
         """Test against a sample version of the status information."""
         with open('FIRBoundaries.dat', 'r', errors='ignore') as file:
