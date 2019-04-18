@@ -72,7 +72,7 @@ class Firs():
 
         Returns:
             VatsimStatus: object with status file information."""
-        with open(url, 'r') as file:
+        with open(url, 'r', encoding="ISO-8859-1") as file:
             file = file.read()
         return Firs(file.replace('\n\n\n', '\n\n').split('\n\n'))
 
