@@ -46,4 +46,5 @@ class VatsimTest(unittest.TestCase):
 
         for item in [*status.firs, *status.uirs, *status.airports]:
             self.assertIs(type(item), dict)
+            
 
