@@ -106,4 +106,3 @@ def _split_uirs(line):
         'name',
         'firs')
     return _split_to_list(keys, line)
-Firs.from_file()

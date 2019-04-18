@@ -33,4 +33,3 @@ class FirsTest(unittest.TestCase):
         self.assertTrue(len(status.airports) > 0)
         self.assertTrue(len(status.firs) > 0)
         self.assertTrue(len(status.uirs) > 0)
-        
