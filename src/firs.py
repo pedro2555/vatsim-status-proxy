@@ -120,13 +120,13 @@ class FirsPolygons():
 
     @staticmethod
     def from_file(datafile='FIRBoundaries.dat'):
-        """Returns a valid FIR's, UIR's and airports informations.
+        """Returns a valid FIR's polygons.
 
         Args:
-            datafile (str): A valid VATSpy.dat file from VATSPY software.
+            datafile (str): A valid FIRBoundaries.dat file from VATSPY software.
 
         Returns:
-            Firs: object with status file information."""
+            FirsPolygons: list with status file information."""
         with open(datafile, 'r', encoding="ISO-8859-1") as file:
             file = file.readlines()
         return FirsPolygons(file)
