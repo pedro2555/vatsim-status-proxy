@@ -36,4 +36,3 @@ class VatsimTest(unittest.TestCase):
         self.assertTrue(len(status.clients) > 0)
         self.assertTrue(len(status.servers) > 0)
         self.assertTrue(len(status.prefile) > 0)
-
