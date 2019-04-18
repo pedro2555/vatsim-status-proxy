@@ -20,7 +20,7 @@ import sys
 
 _current_module = sys.modules[__name__] # pylint: disable=C0103
 
-# pylint: disable=R0902, R0912, R0903
+# pylint: disable=R0902, R0903
 class Firs():
     """Dataclass holding the information provided by VATSpy.dat file from source."""
     def __init__(self, file):
@@ -30,39 +30,46 @@ class Firs():
 
         file = file.replace('\n\n\n', '\n\n').split('\n\n')
 
-        for fir in file:
-            fir = fir.split('\n')
-            section = fir[0]
-            if section == '[FIRs]':
-                section = section.replace('[', '').replace(']', '').lower()
-                for item in fir:
-                    if not item.startswith(';') and not item.startswith('[') and item != '':
-                        try:
-                            line = item[:-1]
-                            line = vars(_current_module)['_split_firs'](line)
-                            getattr(self, section).append(line)
-                        except AttributeError:
-                            pass
-            elif section == '[UIRs]':
-                section = section.replace('[', '').replace(']', '').lower()
-                for item in fir:
-                    if not item.startswith(';') and not item.startswith('[') and item != '':
-                        try:
-                            line = item[:-1]
-                            line = vars(_current_module)['_split_uirs'](line)
-                            getattr(self, section).append(line)
-                        except AttributeError:
-                            pass
-            elif section == '[Airports]':
-                section = section.replace('[', '').replace(']', '').lower()
-                for item in fir:
-                    if not item.startswith(';') and not item.startswith('[') and item != '':
-                        try:
-                            line = item[:-1]
-                            line = vars(_current_module)['_split_airports'](line)
-                            getattr(self, section).append(line)
-                        except AttributeError:
-                            pass
+        def get_firs(section, items):
+            for item in items:
+                if not item.startswith(';') and not item.startswith('[') and item != '':
+                    try:
+                        line = item[:-1]
+                        line = vars(_current_module)['_split_firs'](line)
+                        getattr(self, section).append(line)
+                    except AttributeError:
+                        pass
+
+        def get_uirs(section, items):
+            for item in items:
+                if not item.startswith(';') and not item.startswith('[') and item != '':
+                    try:
+                        line = item[:-1]
+                        line = vars(_current_module)['_split_uirs'](line)
+                        getattr(self, section).append(line)
+                    except AttributeError:
+                        pass
+
+        def get_airports(section, items):
+            for item in items:
+                if not item.startswith(';') and not item.startswith('[') and item != '':
+                    try:
+                        line = item[:-1]
+                        line = vars(_current_module)['_split_airports'](line)
+                        getattr(self, section).append(line)
+                    except AttributeError:
+                        pass
+
+        for item in file:
+            items = item.split('\n')
+            section = items[0]
+            section = section.replace('[', '').replace(']', '').lower()
+            if section == 'airports':
+                get_airports(section, items)
+            elif section == 'uirs':
+                get_uirs(section, items)
+            elif section == 'firs':
+                get_firs(section, items)
 
     @staticmethod
     def from_file(datafile='VATSpy.dat'):
@@ -105,3 +112,4 @@ def _split_uirs(line):
         'name',
         'firs')
     return _split_to_list(keys, line)
+    
