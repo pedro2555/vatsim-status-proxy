@@ -18,7 +18,8 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
 import unittest
 
-from src.firs import Firs, FirsPolygons
+from src.firs import Firs
+from src.firs_polygons import FirsPolygons
 
 class FirsTest(unittest.TestCase):
     """Tests for VatsimStatus dataclass."""
