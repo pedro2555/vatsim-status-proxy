@@ -18,11 +18,11 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
 import unittest
 
-from src.firs import Firs
+from src.firs import Firs, FirsPolygons
 
 class FirsTest(unittest.TestCase):
     """Tests for VatsimStatus dataclass."""
-    def test(self):
+    def test_firs_info(self):
         """Test against a sample version of the status information."""
         with open('VATSpy.dat', 'r', errors='ignore') as file:
             file = file.read()
@@ -33,3 +33,13 @@ class FirsTest(unittest.TestCase):
         self.assertTrue(len(status.airports) > 0)
         self.assertTrue(len(status.firs) > 0)
         self.assertTrue(len(status.uirs) > 0)
+    
+    def test_firs_polygons(self):
+        """Test against a sample version of the status information."""
+        with open('FIRBoundaries.dat', 'r', errors='ignore') as file:
+            file = file.readlines()
+        status = FirsPolygons(file)
+
+        for item in [*status.firs_polygons]:
+            self.assertIs(type(item), tuple)
+        self.assertTrue(len(status.firs_polygons) > 0)
