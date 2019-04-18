@@ -28,8 +28,8 @@ class FirsTest(unittest.TestCase):
             file = file.readlines()
         status = Firs(file)
 
-        self.assertIsNotNone(status.firs)
-        self.assertIsNotNone(status.uirs)
-        self.assertIsNotNone(status.airports)
+        self.assertTrue(len(status.firs) > 0)
+        self.assertTrue(len(status.uirs) > 0)
+        self.assertTrue(len(status.airports) > 0)
         for item in [*status.firs, *status.uirs, *status.airports]:
             self.assertIs(type(item), dict)
