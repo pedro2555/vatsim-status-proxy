@@ -44,5 +44,8 @@ class VatsimTest(unittest.TestCase):
             file = file.readlines()
         status = Firs(file)
 
+        self.assertIsNotNone(status.firs)
+        self.assertIsNotNone(status.uirs)
+        self.assertIsNotNone(status.airports)
         for item in [*status.firs, *status.uirs, *status.airports]:
             self.assertIs(type(item), dict)

@@ -64,7 +64,7 @@ class Firs():
                             pass
 
     @staticmethod
-    def from_url(datafile='VATSpy.dat'):
+    def from_file(datafile='VATSpy.dat'):
         """Returns a valid FIR's, UIR's and airports informations.
 
         Args:
@@ -76,7 +76,7 @@ class Firs():
             file = file.read()
         return Firs(file.replace('\n\n\n', '\n\n').split('\n\n'))
 
-def _split_to_dict(keys, line, *, separator='|'):
+def _split_to_list(keys, line, *, separator='|'):
     values = line.split(separator)[:len(keys)]
     assert len(keys) == len(values), f'{len(keys)} != {len(values)} for {line}'
     return {key: value for key, value in zip(keys, values)}
@@ -86,7 +86,7 @@ def _split_firs(line):
         'icao',
         'name',
         'prefix_position')
-    return _split_to_dict(keys, line)
+    return _split_to_list(keys, line)
 
 def _split_airports(line):
     keys = (
@@ -96,11 +96,11 @@ def _split_airports(line):
         'lng',
         'tma_prefix_position',
         'fir')
-    return _split_to_dict(keys, line)
+    return _split_to_list(keys, line)
 
 def _split_uirs(line):
     keys = (
         'prefix_position',
         'name',
         'firs')
-    return _split_to_dict(keys, line)
+    return _split_to_list(keys, line)
