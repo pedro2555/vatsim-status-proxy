@@ -99,7 +99,7 @@ class FirsPolygons():
                 head = head[:-1]
                 head = vars(_current_module)['_split_polygons_head'](head)
 
-                getattr(self, 'firs_polygons').append((head, line))
+                getattr(self, 'firs_polygons').append({'head':head, 'polygon':line})
             except AttributeError:
                 pass
 

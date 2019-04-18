@@ -41,5 +41,5 @@ class FirsTest(unittest.TestCase):
         status = FirsPolygons(file)
 
         for item in [*status.firs_polygons]:
-            self.assertIs(type(item), tuple)
+            self.assertIs(type(item), dict)
         self.assertTrue(len(status.firs_polygons) > 0)
