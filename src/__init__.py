@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
-# pylint: disable=C0103
+# pylint: disable=C0103, R0912
 from datetime import datetime, timedelta
 from eve import Eve
 from . import icao_data
