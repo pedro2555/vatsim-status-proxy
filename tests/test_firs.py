@@ -27,7 +27,7 @@ class FirsTest(unittest.TestCase):
         with open('VATSpy.dat', 'r', errors='ignore') as file:
             file = file.read()
         status = Firs(file)
-       
+
         for item in [*status.firs, *status.uirs, *status.airports]:
             self.assertIs(type(item), dict)
         self.assertTrue(len(status.airports) > 0)
