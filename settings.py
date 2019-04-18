@@ -99,7 +99,7 @@ firs_poly_schema = {
 		'type': 'string'
 	},
 	'name': {'type': 'string'},
-	'tma_prefix_position': {'type': 'string'}
+	'prefix_position': {'type': 'string'}
 }
 firs_poly = {
 	'schema': firs_poly_schema,
@@ -115,7 +115,7 @@ uirs_poly_schema = {
 	'firs': {'type': 'string'}
 }
 uirs_poly = {
-	'schema': airports_poly_schema,
+	'schema': uirs_poly_schema,
 	'resource_methods': ['GET', 'POST'],
 	'item_methods': ['GET', 'PATCH', 'PUT'],
 	'pagination': False
