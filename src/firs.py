@@ -28,6 +28,8 @@ class Firs():
         self.uirs = list()
         self.airports = list()
 
+        file = file.replace('\n\n\n', '\n\n').split('\n\n')
+
         for fir in file:
             fir = fir.split('\n')
             section = fir[0]
@@ -74,7 +76,7 @@ class Firs():
             Firs: object with status file information."""
         with open(datafile, 'r', encoding="ISO-8859-1") as file:
             file = file.read()
-        return Firs(file.replace('\n\n\n', '\n\n').split('\n\n'))
+        return Firs(file)
 
 def _split_to_list(keys, line, *, separator='|'):
     values = line.split(separator)[:len(keys)]
@@ -104,3 +106,4 @@ def _split_uirs(line):
         'name',
         'firs')
     return _split_to_list(keys, line)
+Firs.from_file()

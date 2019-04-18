@@ -25,11 +25,12 @@ class FirsTest(unittest.TestCase):
     def test(self):
         """Test against a sample version of the status information."""
         with open('VATSpy.dat', 'r', errors='ignore') as file:
-            file = file.readlines()
+            file = file.read()
         status = Firs(file)
-
-        self.assertTrue(len(status.firs) > 0)
-        self.assertTrue(len(status.uirs) > 0)
-        self.assertTrue(len(status.airports) > 0)
+       
         for item in [*status.firs, *status.uirs, *status.airports]:
             self.assertIs(type(item), dict)
+        self.assertTrue(len(status.airports) > 0)
+        self.assertTrue(len(status.firs) > 0)
+        self.assertTrue(len(status.uirs) > 0)
+        
