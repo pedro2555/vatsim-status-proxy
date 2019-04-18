@@ -20,7 +20,7 @@ import sys
 
 _current_module = sys.modules[__name__] # pylint: disable=C0103
 
-# pylint: disable=R0903, R0902, R1702, R0912
+# pylint: disable=R0902, R0912, R0903
 class Firs():
     """Dataclass holding the information provided by VATSpy.dat file from source."""
     def __init__(self, file):
@@ -37,13 +37,12 @@ class Firs():
                 section = section.replace('[', '').replace(']', '').lower()
                 for item in fir:
                     if not item.startswith(';') and not item.startswith('[') and item != '':
-                        if item.split('|')[2] != '':
-                            try:
-                                line = item[:-1]
-                                line = vars(_current_module)['_split_firs'](line)
-                                getattr(self, section).append(line)
-                            except AttributeError:
-                                pass
+                        try:
+                            line = item[:-1]
+                            line = vars(_current_module)['_split_firs'](line)
+                            getattr(self, section).append(line)
+                        except AttributeError:
+                            pass
             elif section == '[UIRs]':
                 section = section.replace('[', '').replace(']', '').lower()
                 for item in fir:
