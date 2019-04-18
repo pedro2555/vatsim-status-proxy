@@ -53,7 +53,7 @@ def pre_get_callback(resource, *_):
         db.insert_one({'_created': now, '_updated': now})
 
     status = VatsimStatus.from_url()
-    firs_status = Firs.from_file()
+
     def save(existing, new):
         new['_updated'] = now
         if existing:

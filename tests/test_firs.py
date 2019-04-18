@@ -23,13 +23,13 @@ from src.firs import Firs
 class FirsTest(unittest.TestCase):
     """Tests for VatsimStatus dataclass."""
     def test(self):
-            """Test against a sample version of the status information."""
-            with open('VATSpy.dat', 'r', errors='ignore') as file:
-                file = file.readlines()
-            status = Firs(file)
+        """Test against a sample version of the status information."""
+        with open('VATSpy.dat', 'r', errors='ignore') as file:
+            file = file.readlines()
+        status = Firs(file)
 
-            self.assertIsNotNone(status.firs)
-            self.assertIsNotNone(status.uirs)
-            self.assertIsNotNone(status.airports)
-            for item in [*status.firs, *status.uirs, *status.airports]:
-                self.assertIs(type(item), dict)
+        self.assertIsNotNone(status.firs)
+        self.assertIsNotNone(status.uirs)
+        self.assertIsNotNone(status.airports)
+        for item in [*status.firs, *status.uirs, *status.airports]:
+            self.assertIs(type(item), dict)
