@@ -77,49 +77,7 @@ firs = {
 	'item_methods': ['GET', 'PATCH', 'PUT'],
 	'pagination': False
 }
-airports_poly_schema = {
-	'icao': {
-		'type': 'string'
-	},
-	'name': {'type': 'string'},
-	'lat': {'type': 'string'},
-	'lng': {'type': 'string'},
-	'tma_prefix_position': {'type': 'string'},
-	'fir': {'type': 'string'}
 
-}
-airports_poly = {
-	'schema': airports_poly_schema,
-	'resource_methods': ['GET', 'POST'],
-	'item_methods': ['GET', 'PATCH', 'PUT'],
-	'pagination': False
-}
-firs_poly_schema = {
-	'icao': {
-		'type': 'string'
-	},
-	'name': {'type': 'string'},
-	'prefix_position': {'type': 'string'}
-}
-firs_poly = {
-	'schema': firs_poly_schema,
-	'resource_methods': ['GET', 'POST'],
-	'item_methods': ['GET', 'PATCH', 'PUT'],
-	'pagination': False
-}
-uirs_poly_schema = {
-	'prefix_position': {
-		'type': 'string'
-	},
-	'name': {'type': 'string'},
-	'firs': {'type': 'string'}
-}
-uirs_poly = {
-	'schema': uirs_poly_schema,
-	'resource_methods': ['GET', 'POST'],
-	'item_methods': ['GET', 'PATCH', 'PUT'],
-	'pagination': False
-}
 data_version = {
 	'schema': {},
 	'internal_resource': True
@@ -131,10 +89,7 @@ DOMAIN = {
 	'servers': copy(default),
 	'prefiles': copy(default),
 	'firs': firs,
-	'dataversion': data_version,
-	'airports_poly': airports_poly,
-	'firs_poly': firs_poly,
-	'uirs_poly': uirs_poly
+	'dataversion': data_version
 }
 
 # We want to seamlessy run our API both locally and on Heroku. If running on

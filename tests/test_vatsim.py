@@ -19,7 +19,6 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 import unittest
 
 from src.vatsim import VatsimStatus
-from src.firs import Firs
 
 class VatsimTest(unittest.TestCase):
     """Tests for VatsimStatus dataclass."""
@@ -38,14 +37,3 @@ class VatsimTest(unittest.TestCase):
         self.assertTrue(len(status.servers) > 0)
         self.assertTrue(len(status.prefile) > 0)
 
-    def test_firs(self):
-        """Test against a sample version of the status information."""
-        with open('VATSpy.dat', 'r', errors='ignore') as file:
-            file = file.readlines()
-        status = Firs(file)
-
-        self.assertIsNotNone(status.firs)
-        self.assertIsNotNone(status.uirs)
-        self.assertIsNotNone(status.airports)
-        for item in [*status.firs, *status.uirs, *status.airports]:
-            self.assertIs(type(item), dict)
