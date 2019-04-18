@@ -77,7 +77,6 @@ firs = {
 	'item_methods': ['GET', 'PATCH', 'PUT'],
 	'pagination': False
 }
-
 data_version = {
 	'schema': {},
 	'internal_resource': True
