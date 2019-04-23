@@ -65,15 +65,18 @@ def pre_get_callback(resource, *_):
     for item in status.voice_servers:
         existing = db.find_one({'hostname_or_IP': item['hostname_or_IP']})
         save(existing, item)
+    db.remove({'_updated': {'$lt': now}}) # purge offline clients
     db = app.data.driver.db['clients']
     for item in status.clients:
         existing = db.find_one(
             {'callsign': item['callsign'], 'cid': item['cid'], 'clienttype': item['clienttype']})
         save(existing, item)
+    db.remove({'_updated': {'$lt': now}})
     db = app.data.driver.db['servers']
     for item in status.servers:
         existing = db.find_one({'hostname_or_IP': item['hostname_or_IP']})
         save(existing, item)
+    db.remove({'_updated': {'$lt': now}})
     db = app.data.driver.db['prefile']
     for item in status.prefile:
         existing = db.find_one({'callsign': item['callsign'], 'cid': item['cid']})
