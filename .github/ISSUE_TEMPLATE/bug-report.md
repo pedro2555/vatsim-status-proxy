@@ -15,5 +15,4 @@ Describe the behaviour you're expecting from executing the provided steps.
 
 # Actual behaviour
 
-
 Describe the actual behaviour observed.
