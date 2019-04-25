@@ -149,7 +149,8 @@ def _split_clients(line):
         'planned_destairport_lat': float,
         'planned_destairport_lon': float,
         'altitude': int,
-        'groundspeed': int
+        'groundspeed': int,
+        'facilitytype':int
     }
     for key, func in types.items():
         value = result[key].strip()
