@@ -18,7 +18,6 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import sys
-import geojson
 from datetime import datetime
 from urllib.request import urlopen
 from .firs_polygons import FirsPolygons
@@ -86,10 +85,18 @@ class VatsimStatus():
         return VatsimStatus([line.decode('utf-8', 'ignore') for line in file])
 
 def get_online_atc(icao):
+    """Returns a valid FIR Polygon.
+
+    Args:
+        icao (str): Is a valid callsign result.
+
+    Returns:
+        get_online_atc: geojson information."""
     result = FirsPolygons.from_file()
     for atc in result.firs_polygons:
         if atc == icao:
             return result.firs_polygons[atc]
+    return
 
 def _split_to_dict(keys, line, *, separator=':'):
     values = line.split(separator)
