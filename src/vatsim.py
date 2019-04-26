@@ -97,7 +97,7 @@ def get_online_atc(icao):
         if atc == icao:
             result = result.firs_polygons[atc]
             return result
-    return
+    return None
 
 def _split_to_dict(keys, line, *, separator=':'):
     values = line.split(separator)
