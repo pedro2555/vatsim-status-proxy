@@ -95,7 +95,8 @@ def get_online_atc(icao):
     result = FirsPolygons.from_file()
     for atc in result.firs_polygons:
         if atc == icao:
-            return result.firs_polygons[atc]
+            result = result.firs_polygons[atc]
+            return result
     return
 
 def _split_to_dict(keys, line, *, separator=':'):
