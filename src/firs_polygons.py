@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
 import sys
+import geojson
+from collections import defaultdict
 
 _current_module = sys.modules[__name__] # pylint: disable=C0103
 
@@ -24,18 +26,19 @@ _current_module = sys.modules[__name__] # pylint: disable=C0103
 class FirsPolygons():
     """Dataclass holding the information provided by VATSpy.dat file from source."""
     def __init__(self, file):
-        self.firs_polygons = list()
+        self.firs_polygons = defaultdict(list)
 
         def get_polygons(head, items):
             try:
-                line = list()
+                lines = list()
                 for item in items:
                     line = item[:-1]
-                    line = vars(_current_module)['_split_polygons_data'](line)
+                    lines.append(vars(_current_module)['_split_polygons_data'](line))
                 head = head[:-1]
                 head = vars(_current_module)['_split_polygons_head'](head)
-
-                getattr(self, 'firs_polygons').append({'head':head, 'polygon':line})
+                lines = [[float(x['lng']), float(x['lat'])] for x in lines]
+                lines = geojson.Polygon(lines)
+                getattr(self, 'firs_polygons')[head['icao']] = lines
             except AttributeError:
                 pass
 
@@ -47,7 +50,7 @@ class FirsPolygons():
             else:
                 str_to_split += '\r{}'.format(item)
 
-        data = [x.replace('\nA', 'A').split('\n\\r') for x in str_to_split.split('\n\n')]
+        data = [x.replace('\nA', 'A').split('\n\r') for x in str_to_split.split('\n\n')]
 
         for items in data:
             fir_head = items[0]
@@ -68,17 +71,17 @@ class FirsPolygons():
         return FirsPolygons(file)
 
 def _split_to_list(keys, line, *, separator='|'):
-    values = line.split(separator)[:len(keys)]
+    values = line.split(separator)[:len(keys)][::-1]
     assert len(keys) == len(values), f'{len(keys)} != {len(values)} for {line}'
     return {key: value for key, value in zip(keys, values)}
 
 def _split_polygons_head(line):
     keys = (
-        'icao')
+        'icao',)
     return _split_to_list(keys, line)
 
 def _split_polygons_data(line):
     keys = (
-        'lat',
-        'lng')
+        'lng',
+        'lat')
     return _split_to_list(keys, line)

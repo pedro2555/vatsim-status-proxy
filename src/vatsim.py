@@ -18,8 +18,10 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import sys
+import geojson
 from datetime import datetime
 from urllib.request import urlopen
+from .firs_polygons import FirsPolygons
 
 _current_module = sys.modules[__name__] # pylint: disable=C0103
 
@@ -82,6 +84,12 @@ class VatsimStatus():
             VatsimStatus: object with status file information."""
         file = urlopen(url)
         return VatsimStatus([line.decode('utf-8', 'ignore') for line in file])
+
+def get_online_atc(icao):
+    result = FirsPolygons.from_file()
+    for atc in result.firs_polygons:
+        if atc == icao:
+            return result.firs_polygons[atc]
 
 def _split_to_dict(keys, line, *, separator=':'):
     values = line.split(separator)
@@ -155,7 +163,10 @@ def _split_clients(line):
         value = result[key].strip()
         value = value if value != '' else 0
         result[key] = func(value)
-    result['location'] = [result['longitude'], result['latitude']]
+    if result['clienttype'] == 'ATC':
+        result['location'] = get_online_atc(result['callsign'])
+    else:
+        result['location'] = [result['longitude'], result['latitude']]
     del result['longitude'], result['latitude']
     result['planned_depairport_location'] = [
         result['planned_depairport_lon'],
