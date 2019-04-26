@@ -94,7 +94,7 @@ def get_online_atc(icao):
         get_online_atc: geojson information."""
     result = FirsPolygons.from_file()
     for atc in result.firs_polygons:
-        if atc == icao:
+        if atc == icao.split('_')[0]:
             result = result.firs_polygons[atc]
             return result
     return None
