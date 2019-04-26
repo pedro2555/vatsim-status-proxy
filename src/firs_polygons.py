@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
 import sys
-import geojson
 from collections import defaultdict
+import geojson
 
 _current_module = sys.modules[__name__] # pylint: disable=C0103
 
