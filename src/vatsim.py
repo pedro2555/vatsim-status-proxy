@@ -20,6 +20,7 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 from datetime import datetime
 from urllib.request import urlopen
+import geojson
 from .firs_polygons import FirsPolygons
 
 _current_module = sys.modules[__name__] # pylint: disable=C0103
@@ -100,7 +101,7 @@ def get_online_atc(icao):
     return None
 
 def _split_to_dict(keys, line, *, separator=':'):
-    values = line.split(separator)
+    values = line.split(separator)[:len(keys)]
     assert len(keys) == len(values), f'{len(keys)} != {len(values)} for {line}'
     return {key: value for key, value in zip(keys, values)}
 
@@ -172,9 +173,29 @@ def _split_clients(line):
         value = value if value != '' else 0
         result[key] = func(value)
     if result['clienttype'] == 'ATC':
-        result['location'] = get_online_atc(result['callsign'])
+        polygon = get_online_atc(result['callsign'])
+        if polygon:
+            result['location'] = get_online_atc(result['callsign'])
+            if not result['location'].isvalid:
+                print(result['location'])
+        else:
+            result['location'] = geojson.Polygon([[
+                [result['longitude'], result['latitude']],
+                [result['longitude'], result['latitude']],
+                [result['longitude'], result['latitude']],
+                [result['longitude'], result['latitude']]
+            ]])
+            if not result['location'].isvalid:
+                print(result['location'])
     else:
-        result['location'] = [result['longitude'], result['latitude']]
+        result['location'] = geojson.Polygon([[
+            [result['longitude'], result['latitude']],
+            [result['longitude'], result['latitude']],
+            [result['longitude'], result['latitude']],
+            [result['longitude'], result['latitude']]
+            ]])
+        if not result['location'].isvalid:
+            print(result['location'])
     del result['longitude'], result['latitude']
     result['planned_depairport_location'] = [
         result['planned_depairport_lon'],

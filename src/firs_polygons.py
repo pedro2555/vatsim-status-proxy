@@ -37,7 +37,7 @@ class FirsPolygons():
                 head = head[:-1]
                 head = vars(_current_module)['_split_polygons_head'](head)
                 lines = [[float(x['lng']), float(x['lat'])] for x in lines]
-                lines = geojson.Polygon(lines)
+                lines = geojson.Polygon([lines])
                 getattr(self, 'firs_polygons')[head['icao']] = lines
             except AttributeError:
                 pass
@@ -55,6 +55,7 @@ class FirsPolygons():
         for items in data:
             fir_head = items[0]
             fir_polygon_list = [x for x in items[1:]]
+            fir_polygon_list.append(items[1])
             get_polygons(fir_head, fir_polygon_list)
 
     @staticmethod

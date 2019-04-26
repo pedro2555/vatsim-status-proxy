@@ -34,7 +34,7 @@ clients_schema = {
 	'cid': {'type': 'string'},
 	'realname': {'type': 'string'},
 	'clienttype': {'type': 'string'},
-	'location': {'type': 'point'},
+	'location': {'type': 'polygon'},
 	'groundspeed': {'type': 'number'},
 	'altitude': {'type': 'number'},
 	'boundaries': {
