@@ -18,6 +18,7 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import sys
+import geojson
 from datetime import datetime
 from urllib.request import urlopen
 
@@ -142,8 +143,6 @@ def _split_clients(line):
         'QNH_Mb')
     result = _split_to_dict(keys, line)
     types = {
-        'latitude': float,
-        'longitude': float,
         'planned_depairport_lat': float,
         'planned_depairport_lon': float,
         'planned_destairport_lat': float,
@@ -155,7 +154,7 @@ def _split_clients(line):
         value = result[key].strip()
         value = value if value != '' else 0
         result[key] = func(value)
-    result['location'] = [result['longitude'], result['latitude']]
+    result['location'] = geojson.Point(geojson.coords(result['longitude']), geojson.coords(result['latitude']))
     del result['longitude'], result['latitude']
     result['planned_depairport_location'] = [
         result['planned_depairport_lon'],
