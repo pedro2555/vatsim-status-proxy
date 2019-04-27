@@ -33,6 +33,8 @@ class VatsimTest(unittest.TestCase):
         self.assertTrue(len(status.voice_servers) > 0)
         for item in [*status.voice_servers, *status.clients, *status.servers, *status.prefile]:
             self.assertIs(type(item), dict)
+        for item in status.clients:
+            self.assertTrue(item['location'].is_valid)
         self.assertTrue(len(status.clients) > 0)
         self.assertTrue(len(status.servers) > 0)
         self.assertTrue(len(status.prefile) > 0)
