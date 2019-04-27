@@ -34,7 +34,7 @@ class VatspyDat():
         for line in lines:
             line.strip()
             if line.startswith('['):
-                section_name = lines[lines.index(line)][1:len(lines[lines.index(line)])-1].lower()
+                section_name = lines[lines.index(line)][1:len(lines[lines.index(line)])-2].lower()
                 lines.pop(lines.index(line))
 
             if line.startswith(';'):
