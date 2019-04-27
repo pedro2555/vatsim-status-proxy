@@ -19,6 +19,7 @@ along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 import unittest
 
 from src.vatspy_dat import VatspyDat
+from src.fir_boundaries_dat import FIRBoundaries
 
 class VatsimTest(unittest.TestCase):
     """Tests for Vatspy dataclasses."""
@@ -35,3 +36,14 @@ class VatsimTest(unittest.TestCase):
         self.assertTrue(len(status.firs) > 0)
         self.assertTrue(len(status.uirs) > 0)
         self.assertTrue(len(status.idl) > 0)
+
+    def test_boundaries(self):
+        """Test against a sample version of the FIRBoundaries.dat information."""
+        with open('FIRBoundaries.dat', 'r', errors='ignore') as file:
+            file = file.readlines()
+        status = FIRBoundaries(file)
+
+        for item in status.boundaries:
+            self.assertIs(type(item), str)
+        self.assertTrue(len(status.boundaries) > 0)
+        
