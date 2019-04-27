@@ -4,3 +4,4 @@ Eve==0.9
 gunicorn==19.9.0
 pylint==2.3.1
 requests==2.21.0
+geojson==2.4.1
