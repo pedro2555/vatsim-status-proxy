@@ -25,7 +25,7 @@ class VatsimTest(unittest.TestCase):
     def test_dat(self):
         """Test against a sample version of the VATspy.dat information."""
         with open('VATSpy.dat', 'r', errors='ignore') as file:
-            file = file.read()
+            file = file.readlines()
         status = VatspyDat(file)
 
         for item in [*status.countries, *status.airports, *status.firs, *status.uirs, *status.idl]:

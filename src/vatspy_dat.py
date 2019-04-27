@@ -24,15 +24,15 @@ _current_module = sys.modules[__name__] # pylint: disable=C0103
 # pylint: disable=R0903, R0902
 class VatspyDat():
     """Dataclass holding the information provided by VATspy.dat."""
-    def __init__(self, file):
+    def __init__(self, lines):
         self.countries = list()
         self.airports = list()
         self.firs = list()
         self.uirs = list()
         self.idl = list()
 
-        lines = file.replace('\n\n\n', '\n\n').replace('\n\n', '\n').split('\n')
         for line in lines:
+            line.strip()
             if line.startswith('['):
                 section_name = lines[lines.index(line)][1:len(lines[lines.index(line)])-1].lower()
                 lines.pop(lines.index(line))
@@ -56,7 +56,7 @@ class VatspyDat():
         Returns:
             VatspyDat: object with status file information."""
         with open(data, 'r') as file:
-            return VatspyDat(file.read())
+            return VatspyDat(file.readlines())
 
 def _split_to_dict(keys, line, *, separator='|'):
     values = line.split(separator)[:len(keys)]
