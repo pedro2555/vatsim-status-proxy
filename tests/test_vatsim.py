@@ -35,6 +35,10 @@ class VatsimTest(unittest.TestCase):
             self.assertIs(type(item), dict)
         for item in status.clients:
             self.assertTrue(item['location'].is_valid)
+            for loc in item['location']['coordinates']:
+                for l in loc:
+                    self.assertTrue(l[0] >= -180 and l[0] <= 180)
+                    self.assertTrue(l[1] >= -90 and l[1] <= 90)
         self.assertTrue(len(status.clients) > 0)
         self.assertTrue(len(status.servers) > 0)
         self.assertTrue(len(status.prefile) > 0)
