@@ -31,26 +31,30 @@ class VatspyDat():
         self.uirs = list()
         self.idl = list()
 
-        for section in file.replace('\n\n\n', '\n\n').split('\n\n'):
-            section = section.split('\n')
-            section_name = section[0][1:len(section[0])-1].lower()
-            section.pop(0)
+        lines = file.replace('\n\n\n', '\n\n').replace('\n\n', '\n').split('\n')
+        for line in lines:
+            if line.startswith('['):
+                section_name = lines[lines.index(line)][1:len(lines[lines.index(line)])-1].lower()
+                lines.pop(lines.index(line))
 
-            for line in section:
-                if line.startswith(';'):
-                    continue
-                _section = f'_split_{section_name}'
-                try:
-                    line = vars(_current_module)[_section](line)
-                    getattr(self, section_name).append(line)
-                except AttributeError:
-                    pass
+            if line.startswith(';'):
+                continue
+            _section = f'_split_{section_name}'
+            try:
+                line = vars(_current_module)[_section](line)
+                getattr(self, section_name).append(line)
+            except AttributeError:
+                pass
 
     @staticmethod
     def from_file(data='VATSpy.dat'):
-        """
-        Tests
-        """
+        """Returns a valid VATSpy.dat information.
+
+        Args:
+            data (str): A valid VATSpy.dat file.
+
+        Returns:
+            VatspyDat: object with status file information."""
         with open(data, 'r') as file:
             return VatspyDat(file.read())
 
