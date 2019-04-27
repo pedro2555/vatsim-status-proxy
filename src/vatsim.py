@@ -24,6 +24,7 @@ import geojson
 from .firs_polygons import FirsPolygons
 
 _current_module = sys.modules[__name__] # pylint: disable=C0103
+polygons_firs = FirsPolygons.from_file() # pylint: disable=C0103
 
 # pylint: disable=R0903, R0902
 class VatsimStatus():
@@ -93,11 +94,10 @@ def get_online_atc(icao):
 
     Returns:
         get_online_atc: geojson information."""
-    result = FirsPolygons.from_file()
-    for atc in result.firs_polygons:
+    for atc in vars(polygons_firs):
         if atc == icao.split('_')[0]:
-            result = result.firs_polygons[atc]
-            return result
+            polygon = vars(polygons_firs)[atc]
+            return polygon
     return None
 
 def _split_to_dict(keys, line, *, separator=':'):
@@ -176,8 +176,6 @@ def _split_clients(line):
         polygon = get_online_atc(result['callsign'])
         if polygon:
             result['location'] = get_online_atc(result['callsign'])
-            if not result['location'].isvalid:
-                print(result['location'])
         else:
             result['location'] = geojson.Polygon([[
                 [result['longitude'], result['latitude']],
@@ -185,8 +183,6 @@ def _split_clients(line):
                 [result['longitude'], result['latitude']],
                 [result['longitude'], result['latitude']]
             ]])
-            if not result['location'].isvalid:
-                print(result['location'])
     else:
         result['location'] = geojson.Polygon([[
             [result['longitude'], result['latitude']],
@@ -194,8 +190,6 @@ def _split_clients(line):
             [result['longitude'], result['latitude']],
             [result['longitude'], result['latitude']]
             ]])
-        if not result['location'].isvalid:
-            print(result['location'])
     del result['longitude'], result['latitude']
     result['planned_depairport_location'] = [
         result['planned_depairport_lon'],
