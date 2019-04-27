@@ -24,7 +24,7 @@ class VatsimTest(unittest.TestCase):
     """Tests for Vatspy dataclasses."""
     def test_dat(self):
         """Test against a sample version of the VATspy.dat information."""
-        with open('VATSpy.dat', 'r') as file:
+        with open('VATSpy.dat', 'r', errors='ignore') as file:
             file = file.read()
         status = VatspyDat(file)
 
