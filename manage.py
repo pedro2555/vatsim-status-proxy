@@ -33,11 +33,11 @@ def cli():
 def run(host, port, debug):
     """Runs a development web server."""
     if debug:
-        from src import app
+        from wsgi import app
         app.run(host=host, port=port, debug=debug)
     else:
         bind = '%s:%s' % (host, port)
-        subprocess.call(['gunicorn', 'src:app', '--bind', bind, '--log-file=-'])
+        subprocess.call(['gunicorn', 'wsgi:app', '--bind', bind, '--log-file=-'])
 
 @cli.command()
 def shell():
