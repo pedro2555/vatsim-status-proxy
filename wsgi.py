@@ -16,4 +16,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with VATSIM Status Proxy.  If not, see <http://www.gnu.org/licenses/>.
 """
-from src import app
+from src import create_app
+
+app = application = create_app()
